@@ -1,0 +1,2 @@
+C:408:GET OPTIONS ~SerialNumber,AutoServerFunOn,AutoServerMode,Door1SensorType
+C:405:SET OPTIONS AutoServerFunOn=1,AutoServerMode=1,Door1SensorType=1

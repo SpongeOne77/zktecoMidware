@@ -1,0 +1,215 @@
+GET OPTIONS ~SerialNumber,ComPwd,PhotoFunOn,AutoServerFunOn
+
+GET OPTIONS ~SerialNumber,IPAddress1,NetMask1,GATEIPAddress1
+
+DATA DELETE DevProperty *
+
+DATA UPDATE DevProperty ID=22	Type=0	BusType=0	MachineType=28	Address=0	Mac=	IPAddress=192.168.51.141	SN=DDG9470069111500005	IsMaster=0
+
+DATA DELETE DevParameters *
+
+DATA DELETE userauthorize *
+
+DATA DELETE firstcard *
+
+DATA UPDATE DoorParameters ID=1	Name=DoorFirstCardOpenDoor	Value=0	DevID=22
+ID=2	Name=DoorFirstCardOpenDoor	Value=0	DevID=22
+ID=3	Name=DoorFirstCardOpenDoor	Value=0	DevID=22
+ID=4	Name=DoorFirstCardOpenDoor	Value=0	DevID=22
+
+DATA DELETE multimcard *
+
+DATA UPDATE DoorParameters ID=1	Name=DoorMultiCardOpenDoor	Value=0	DevID=22
+ID=2	Name=DoorMultiCardOpenDoor	Value=0	DevID=22
+ID=3	Name=DoorMultiCardOpenDoor	Value=0	DevID=22
+ID=4	Name=DoorMultiCardOpenDoor	Value=0	DevID=22
+
+DATA DELETE inoutfun *
+
+DATA DELETE InputIOSetting *
+
+DATA DELETE DoorProperty *
+
+DATA UPDATE DoorProperty ID=1	DevID=22	Address=1	Disable=0
+ID=2	DevID=22	Address=2	Disable=0
+ID=3	DevID=22	Address=3	Disable=0
+ID=4	DevID=22	Address=4	Disable=0
+
+DATA DELETE DoorParameters *
+
+DATA DELETE ReaderWGFormat ReaderID=1	DevID=22
+ReaderID=2	DevID=22
+
+DATA UPDATE InputIOSetting Number=1	InType=0	TimeZoneId=1	DevID=22
+
+DATA UPDATE DoorParameters ID=1	Name=DoorAutoMatch	Value=1	DevID=22
+ID=1	Name=DoorDrivertime	Value=5	DevID=22
+ID=1	Name=DoorKeepOpenTimeZone	Value=0	DevID=22
+ID=1	Name=DoorValidTZ	Value=1	DevID=22
+ID=1	Name=DoorSupperPassWord	Value=	DevID=22
+ID=1	Name=DoorIntertime	Value=2	DevID=22
+ID=1	Name=DoorVerifyType	Value=6	DevID=22
+ID=1	Name=DoorSensorType	Value=0	DevID=22
+ID=1	Name=DoorDetectortime	Value=15	DevID=22
+ID=1	Name=DoorCloseAndLock	Value=0	DevID=22
+ID=1	Name=DoorForcePassWord	Value=	DevID=22
+ID=1	Name=DoorInTimeAPB	Value=0	DevID=22
+ID=1	Name=DoorREXInput	Value=1	DevID=22
+ID=1	Name=DoorREXTimeOut	Value=	DevID=22
+ID=1	Name=DoorDelayOpenTime	Value=0	DevID=22
+ID=1	Name=ExtDoorDelayDrivertime	Value=15	DevID=22
+ID=1	Name=DoorMultiCardInterTime	Value=10	DevID=22
+
+DATA DELETE ReaderWGFormat ReaderID=3	DevID=22
+ReaderID=4	DevID=22
+
+DATA UPDATE InputIOSetting Number=2	InType=0	TimeZoneId=1	DevID=22
+
+DATA UPDATE DoorParameters ID=2	Name=DoorAutoMatch	Value=1	DevID=22
+ID=2	Name=DoorDrivertime	Value=5	DevID=22
+ID=2	Name=DoorKeepOpenTimeZone	Value=0	DevID=22
+ID=2	Name=DoorValidTZ	Value=1	DevID=22
+ID=2	Name=DoorSupperPassWord	Value=	DevID=22
+ID=2	Name=DoorIntertime	Value=2	DevID=22
+ID=2	Name=DoorVerifyType	Value=6	DevID=22
+ID=2	Name=DoorSensorType	Value=0	DevID=22
+ID=2	Name=DoorDetectortime	Value=15	DevID=22
+ID=2	Name=DoorCloseAndLock	Value=0	DevID=22
+ID=2	Name=DoorForcePassWord	Value=	DevID=22
+ID=2	Name=DoorInTimeAPB	Value=0	DevID=22
+ID=2	Name=DoorREXInput	Value=1	DevID=22
+ID=2	Name=DoorREXTimeOut	Value=	DevID=22
+ID=2	Name=DoorDelayOpenTime	Value=0	DevID=22
+ID=2	Name=ExtDoorDelayDrivertime	Value=15	DevID=22
+ID=2	Name=DoorMultiCardInterTime	Value=10	DevID=22
+
+DATA DELETE ReaderWGFormat ReaderID=5	DevID=22
+ReaderID=6	DevID=22
+
+DATA UPDATE InputIOSetting Number=3	InType=0	TimeZoneId=1	DevID=22
+
+DATA UPDATE DoorParameters ID=3	Name=DoorAutoMatch	Value=1	DevID=22
+ID=3	Name=DoorDrivertime	Value=5	DevID=22
+ID=3	Name=DoorKeepOpenTimeZone	Value=0	DevID=22
+ID=3	Name=DoorValidTZ	Value=1	DevID=22
+ID=3	Name=DoorSupperPassWord	Value=	DevID=22
+ID=3	Name=DoorIntertime	Value=2	DevID=22
+ID=3	Name=DoorVerifyType	Value=6	DevID=22
+ID=3	Name=DoorSensorType	Value=0	DevID=22
+ID=3	Name=DoorDetectortime	Value=15	DevID=22
+ID=3	Name=DoorCloseAndLock	Value=0	DevID=22
+ID=3	Name=DoorForcePassWord	Value=	DevID=22
+ID=3	Name=DoorInTimeAPB	Value=0	DevID=22
+ID=3	Name=DoorREXInput	Value=1	DevID=22
+ID=3	Name=DoorREXTimeOut	Value=	DevID=22
+ID=3	Name=DoorDelayOpenTime	Value=0	DevID=22
+ID=3	Name=ExtDoorDelayDrivertime	Value=15	DevID=22
+ID=3	Name=DoorMultiCardInterTime	Value=10	DevID=22
+
+DATA DELETE ReaderWGFormat ReaderID=7	DevID=22
+ReaderID=8	DevID=22
+
+DATA UPDATE InputIOSetting Number=4	InType=0	TimeZoneId=1	DevID=22
+
+DATA UPDATE DoorParameters ID=4	Name=DoorAutoMatch	Value=1	DevID=22
+ID=4	Name=DoorDrivertime	Value=5	DevID=22
+ID=4	Name=DoorKeepOpenTimeZone	Value=0	DevID=22
+ID=4	Name=DoorValidTZ	Value=1	DevID=22
+ID=4	Name=DoorSupperPassWord	Value=	DevID=22
+ID=4	Name=DoorIntertime	Value=2	DevID=22
+ID=4	Name=DoorVerifyType	Value=6	DevID=22
+ID=4	Name=DoorSensorType	Value=0	DevID=22
+ID=4	Name=DoorDetectortime	Value=15	DevID=22
+ID=4	Name=DoorCloseAndLock	Value=0	DevID=22
+ID=4	Name=DoorForcePassWord	Value=	DevID=22
+ID=4	Name=DoorInTimeAPB	Value=0	DevID=22
+ID=4	Name=DoorREXInput	Value=1	DevID=22
+ID=4	Name=DoorREXTimeOut	Value=	DevID=22
+ID=4	Name=DoorDelayOpenTime	Value=0	DevID=22
+ID=4	Name=ExtDoorDelayDrivertime	Value=15	DevID=22
+ID=4	Name=DoorMultiCardInterTime	Value=10	DevID=22
+
+DATA DELETE AuxIn *
+
+DATA UPDATE AuxIn ID=1	DevID=22	Address=1	Disable=0
+ID=2	DevID=22	Address=2	Disable=0
+
+DATA UPDATE InputIOSetting Number=1	InType=1	TimeZoneId=1	DevID=22
+Number=2	InType=1	TimeZoneId=1	DevID=22
+
+DATA DELETE AuxOut *
+
+DATA UPDATE AuxOut ID=1	DevID=22	Address=1	Disable=0
+
+DATA DELETE outrelaysetting *
+
+DATA DELETE ReaderProperty *
+
+DATA UPDATE ReaderProperty ID=1	DoorID=1	Type=3	Address=1	IPAddress=	Port=4376	MAC=	InOut=0	Disable=0	VerifyType=0	Multicast=	DevID=22
+ID=2	DoorID=1	Type=1	Address=5	IPAddress=	Port=4376	MAC=	InOut=1	Disable=0	VerifyType=0	Multicast=	DevID=22
+ID=3	DoorID=2	Type=3	Address=2	IPAddress=	Port=4376	MAC=	InOut=0	Disable=0	VerifyType=0	Multicast=	DevID=22
+ID=4	DoorID=2	Type=1	Address=6	IPAddress=	Port=4376	MAC=	InOut=1	Disable=0	VerifyType=0	Multicast=	DevID=22
+ID=5	DoorID=3	Type=3	Address=3	IPAddress=	Port=4376	MAC=	InOut=0	Disable=0	VerifyType=0	Multicast=	DevID=22
+ID=6	DoorID=3	Type=1	Address=7	IPAddress=	Port=4376	MAC=	InOut=1	Disable=0	VerifyType=0	Multicast=	DevID=22
+ID=7	DoorID=4	Type=3	Address=4	IPAddress=	Port=4376	MAC=	InOut=0	Disable=0	VerifyType=0	Multicast=	DevID=22
+ID=8	DoorID=4	Type=1	Address=8	IPAddress=	Port=4376	MAC=	InOut=1	Disable=0	VerifyType=0	Multicast=	DevID=22
+
+DATA UPDATE DevParameters ID=22	Name=IsSupportReaderEncrypt	Value=0
+
+DATA UPDATE ReaderProperty ID=1	DevID=22	OfflineRefuse=0
+ID=2	DevID=22	OfflineRefuse=0
+ID=3	DevID=22	OfflineRefuse=0
+ID=4	DevID=22	OfflineRefuse=0
+ID=5	DevID=22	OfflineRefuse=0
+ID=6	DevID=22	OfflineRefuse=0
+ID=7	DevID=22	OfflineRefuse=0
+ID=8	DevID=22	OfflineRefuse=0
+
+SET OPTIONS AutoServerMode=0
+
+DATA DELETE timezone *
+
+DATA UPDATE timezone TimezoneId=1	SunTime1=2359	SunTime2=0	SunTime3=0	MonTime1=2359	MonTime2=0	MonTime3=0	TueTime1=2359	TueTime2=0	TueTime3=0	WedTime1=2359	WedTime2=0	WedTime3=0	ThuTime1=2359	ThuTime2=0	ThuTime3=0	FriTime1=2359	FriTime2=0	FriTime3=0	SatTime1=2359	SatTime2=0	SatTime3=0	Hol1Time1=2359	Hol1Time2=0	Hol1Time3=0	Hol2Time1=2359	Hol2Time2=0	Hol2Time3=0	Hol3Time1=2359	Hol3Time2=0	Hol3Time3=0
+
+DATA DELETE holiday *
+
+SET OPTIONS MachineTZ=+0800
+
+SET OPTIONS DateTime=655841667
+
+SET OPTIONS WGFmtWithSitecodeOn=1
+
+DATA DELETE DefaultWGFormat *
+
+DATA UPDATE DefaultWGFormat ID=2	CardBit=26	SiteCode=0	FormatName=韦根26	CardFormat=pccccccccccccccccccccccccp:eeeeeeeeeeeeeooooooooooooo
+ID=4	CardBit=34	SiteCode=0	FormatName=韦根34	CardFormat=pccccccccccccccccccccccccccccccccp:eeeeeeeeeeeeeeeeeooooooooooooooooo
+ID=6	CardBit=36	SiteCode=0	FormatName=韦根36	CardFormat=pssssssssssssssssccccccccccccccccccp:oooooooooooooooeeeeeeeeeeeeeeeeeeeee
+ID=7	CardBit=37	SiteCode=0	FormatName=韦根37	CardFormat=psssssssssssssssscccccccccccccccccccp:eeeeeeeeeeeeeeeeeeboooooooooooooooooo
+ID=9	CardBit=50	SiteCode=0	FormatName=韦根50	CardFormat=pssssssssssssssssccccccccccccccccccccccccccccccccp:eeeeeeeeeeeeeeeeeeeeeeeeeooooooooooooooooooooooooo
+ID=10	CardBit=66	SiteCode=0	FormatName=韦根66	CardFormat=pccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccp:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeooooooooooooooooooooooooooooooooo
+
+DATA DELETE WGFormat *
+
+DATA UPDATE WGFormat ID=2	CardBit=26	SiteCode=0	FormatName=韦根26	CardFormat=pccccccccccccccccccccccccp:eeeeeeeeeeeeeooooooooooooo
+ID=3	CardBit=26	SiteCode=0	FormatName=韦根26a	CardFormat=pssssssssccccccccccccccccp:eeeeeeeeeeeeeooooooooooooo
+ID=4	CardBit=34	SiteCode=0	FormatName=韦根34	CardFormat=pccccccccccccccccccccccccccccccccp:eeeeeeeeeeeeeeeeeooooooooooooooooo
+ID=5	CardBit=34	SiteCode=0	FormatName=韦根34a	CardFormat=pssssssssssssssssccccccccccccccccp:eeeeeeeeeeeeeeeeeooooooooooooooooo
+ID=6	CardBit=36	SiteCode=0	FormatName=韦根36	CardFormat=pssssssssssssssssccccccccccccccccccp:oooooooooooooooeeeeeeeeeeeeeeeeeeeee
+ID=7	CardBit=37	SiteCode=0	FormatName=韦根37	CardFormat=psssssssssssssssscccccccccccccccccccp:eeeeeeeeeeeeeeeeeeboooooooooooooooooo
+ID=8	CardBit=37	SiteCode=0	FormatName=韦根37a	CardFormat=pmmmmsssssssssssscccccccccccccccccccp:eeeeeeeeeeeeeeeeeeooooooooooooooooooo
+ID=9	CardBit=50	SiteCode=0	FormatName=韦根50	CardFormat=pssssssssssssssssccccccccccccccccccccccccccccccccp:eeeeeeeeeeeeeeeeeeeeeeeeeooooooooooooooooooooooooo
+ID=10	CardBit=66	SiteCode=0	FormatName=韦根66	CardFormat=pccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccp:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeooooooooooooooooooooooooooooooooo
+
+SET OPTIONS UserWithMulCardOn=1
+
+DATA UPDATE DoorParameters ID=1	Name=MaskFlag	Value=0	DevID=22
+ID=2	Name=MaskFlag	Value=0	DevID=22
+ID=3	Name=MaskFlag	Value=0	DevID=22
+ID=4	Name=MaskFlag	Value=0	DevID=22
+
+DATA DELETE multimcard *
+
+DATA UPDATE DoorParameters ID=1	Name=DoorMultiCardOpenDoor	Value=0	DevID=22
+ID=2	Name=DoorMultiCardOpenDoor	Value=0	DevID=22
+ID=3	Name=DoorMultiCardOpenDoor	Value=0	DevID=22
+ID=4	Name=DoorMultiCardOpenDoor	Value=0	DevID=22
