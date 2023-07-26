@@ -107,7 +107,7 @@ public class AccPushProccesor {
      */
     @RequestMapping("/getrequest")
     public String heartbeat(String SN) {
-        System.out.println("进入到心跳请求...." + SN + new Date());
+//        System.out.println("进入到心跳请求...." + SN + new Date());
         if (!setOptions) {
             return "OK";
         }
@@ -175,8 +175,8 @@ public class AccPushProccesor {
 
     @RequestMapping("/ping")
     public String ping(HttpServletRequest req) {
-        System.out.println("设备上传时通过Ping请求维持心跳");
-        System.out.println("#######请求的URL:" + req.getServletPath());
+//        System.out.println("设备上传时通过Ping请求维持心跳");
+//        System.out.println("#######请求的URL:" + req.getServletPath());
 //        Map<String,String> param = convertMap(req);
 //        System.out.println("######请求的参数"+param.toString());
 //        System.out.println("######请求完整URL:"+req.getServletPath()+"?"+param.toString().trim().replace(", ", "&").replace("{", "").replace("}", ""));
@@ -246,7 +246,7 @@ public class AccPushProccesor {
         } else {
             System.out.println("Waining: Access granted");
             verification = "AUTH=SUCCESS\n";
-            cmd = "C:221:CONTROL DEVICE 1 1 1 5\r\n\r\n";
+            cmd = "C:221:CONTROL DEVICE 1 1 1 9\r\n\r\n";
         }
         System.out.println(verification + originalRequestString + "\r\n" + cmd);
         return verification + originalRequestString + "\r\n" + cmd;

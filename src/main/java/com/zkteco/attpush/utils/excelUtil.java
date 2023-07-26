@@ -27,7 +27,7 @@ public class excelUtil {
                 XSSFSheet sheet = xssfWorkbook.getSheetAt(i);
                 //获取最后一行的num，即总行数。此处从0开始
                 int maxRow = sheet.getLastRowNum();
-                for (int row = 1; row <= maxRow; row++) {
+                for (int row = 2; row <= maxRow; row++) {
                     String employeeNumber = sheet.getRow(row).getCell(0).toString();
                     String employeeName = sheet.getRow(row).getCell(1).toString();
                     if (!cachedMap.containsKey(employeeNumber))

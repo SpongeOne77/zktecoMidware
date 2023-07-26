@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AccPushServiceImpl implements AccPushService {
@@ -31,9 +32,7 @@ public class AccPushServiceImpl implements AccPushService {
         String recordNo = rawRecord.get("pin");
         if (registerMembers.containsKey(recordNo)) {
             NewPersonnelRecord personnelRecord = registerMembers.get(recordNo);
-            personnelRecord.setEmployeePicture(rawRecord.get("content"));
-            //TODO ready for push
-
+            personnelRecord.setEmployeePicture("data:image/jpeg;base64," + rawRecord.get("content"));
             HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(personnelRecord));
             registerMembers.remove(recordNo);
         }
@@ -74,11 +73,21 @@ public class AccPushServiceImpl implements AccPushService {
         tempEmployee.setArea(trendInfo.get("area"));
         System.out.println("this person is sign " + ("0".equals(tempEmployee.getInoutStatus()) ? "in" : "off"));
         System.out.println(tempEmployee);
-        //TODO ready for push
-        String res = HttpClientUtil.post(uploadUrl + "/real/event", JSON.toJSONString(tempEmployee));
+        if ("1".equals(tempEmployee.getInoutStatus())) {
+            CompletableFuture.runAsync(() -> {
+                verifyAndRecordLogs(tempEmployee);
+            });
+            return true;
+        } else {
+            return "true".equals(verifyAndRecordLogs(tempEmployee));
+        }
+    }
+
+    private String verifyAndRecordLogs(EmployeeSignInOffEntity record) {
+        String res = HttpClientUtil.post(uploadUrl + "/real/event", JSON.toJSONString(record));
         Map resObj = (Map) JSON.parse(res);
         System.out.println("============================= access" + resObj.get("data").toString() + "=============================");
-        return "true".equals(resObj.get("data").toString());
+        return resObj.get("data").toString();
     }
 
     private Map<String, String> calcTrendInfo(String SN) {

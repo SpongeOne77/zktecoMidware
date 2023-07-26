@@ -20,21 +20,43 @@ public class dataSync {
     private static Map<String, String> personnelCahedMap = new HashMap<>();
 
     @RequestMapping(value = "/personnel", method = RequestMethod.POST)
-    public String personnel(String address) {
+    public String personnel(String address, String area, Boolean cards) {
         System.out.println("[Attpush]: starting personnel sync");
+        if (area == null || "".equals(area)) {
+            System.out.println("[Attpush]: area is null");
+            return "[AttPush]: area is empty";
+        } else {
+            System.out.println("[Attpush]: area is " + area);
+        }
         personnelCahedMap = excelUtil.readExcel(address + "employee.xlsx");
         System.out.println(personnelCahedMap);
         for (String key : personnelCahedMap.keySet()) {
             System.out.println(key + " " + personnelCahedMap.get(key));
             NewPersonnelRecord tempEmployee = new NewPersonnelRecord();
-            tempEmployee.setEmployeeNumber(key);
+            if (cards) {
+                tempEmployee.setEmployeeNumber("V" + personnelCahedMap.get(key));
+            } else {
+                tempEmployee.setEmployeeNumber(key);
+            }
             tempEmployee.setEmployeeName(personnelCahedMap.get(key));
-            tempEmployee.setArea("熔解");
             String photoBase64 = photoUtil.getImgFileToBase64(address + "photos/" + key + ".jpg");
             tempEmployee.setEmployeePicture("data:image/jpeg;base64," + photoBase64);
+            tempEmployee.setArea(area);
             HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempEmployee));
-
         }
         return "dataSync";
+    }
+
+    @RequestMapping(value = "/loadOnePerson", method = RequestMethod.POST)
+    public String loadOnePerson(String employeeNumber, String employeeName, String photoFolder, String area) {
+        System.out.println("[Attpush]: starting loading one person");
+        NewPersonnelRecord tempemployee = new NewPersonnelRecord();
+        tempemployee.setEmployeeNumber(employeeNumber);
+        tempemployee.setEmployeeName(employeeName);
+        String photoBase64 = photoUtil.getImgFileToBase64(photoFolder + employeeNumber + ".jpg");
+        tempemployee.setEmployeePicture("data:image/jpeg;base64," + photoBase64);
+        tempemployee.setArea(area);
+        HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempemployee));
+        return "[Attpush]: loaded " + employeeNumber + " " + employeeName;
     }
 }
