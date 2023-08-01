@@ -1,23 +1,22 @@
-package com.zkteco.attpush.utils;
-
-import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class MybatisPlusConfig {
-    @Bean
-    public MybatisPlusInterceptor paginationInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        // 添加分页插件
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
-        // 添加 攻击 SQL 阻断解析器,防止全表更新与删除
-        // interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
-        // 添加 乐观锁 插件
-        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
-        return interceptor;
-    }
-}
+//package com.zkteco.attpush.utils;
+//
+//import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+//import org.mybatis.spring.annotation.MapperScan;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//
+//import javax.sql.DataSource;
+//
+//@Configuration
+//@MapperScan("com.zkteco.attpush.mapper")
+//public class MybatisPlusConfig {
+//    @Autowired
+//    private DataSource dataSource;
+//    @Bean
+//    public MybatisSqlSessionFactoryBean mybatisSqlSessionFactoryBean() {
+//        MybatisSqlSessionFactoryBean mybatisPlus = new MybatisSqlSessionFactoryBean();
+//        mybatisPlus.setDataSource(dataSource);
+//        return mybatisPlus;
+//    }
+//}

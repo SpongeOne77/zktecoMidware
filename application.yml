@@ -7,7 +7,8 @@ area: "{ 'CJDE231960054': { 'area': '三厂熔解', 'direction': '0' }, 'CJDE231
 uploadUrl: "http://localhost:8021/api/control"
 spring:
   datasource:
-    url: jdbc:mysql://192.168.1.28:3306/amsds_fifa?&serverTimezone=Asia/Shanghai
+#    url: jdbc:mysql://192.168.1.28:3306/accesscontrol?&serverTimezone=Asia/Shanghai&useSSL=false
+    url: jdbc:mysql://localhost:3306/accesscontrol?&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
@@ -30,7 +31,7 @@ spring:
       filters: stat,wall,slf4j
 
 mybatis-plus:
-  mapper-locations: classpath*:/mapper/**/*.xml # xml路径
+  mapper-locations: classpath*:mapper/*Mapper.xml # xml路径
   global-config:
     db-config:
       id-type: ASSIGN_ID # 全局默认主键策略，默认为雪花ID，若表中设置了自增，则生成的实体自动添加自增ID属性，参考 TestDelete
@@ -38,6 +39,6 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
   configuration:
-    map-underscore-to-camel-case: true # 驼峰转下划线（默认）
+    map-underscore-to-camel-case: false # 驼峰转下划线（默认）
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 日志输出
-  type-aliases-package: com.example.domain.entity
+  type-aliases-package: com.zkteco.attpush.entity

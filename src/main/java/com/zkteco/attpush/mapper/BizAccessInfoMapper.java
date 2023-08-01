@@ -1,8 +1,9 @@
 package com.zkteco.attpush.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zkteco.attpush.entity.TblBizAccessInfo;
-import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
-public interface BizAccessInfoMapper extends BaseMapper<TblBizAccessInfo> { }
+import java.util.List;
+
+public interface BizAccessInfoMapper {
+    public List<TblBizAccessInfo> getByArea(String area);
+}

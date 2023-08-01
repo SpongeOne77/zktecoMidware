@@ -1,7 +1,7 @@
 package com.zkteco.attpush.acc;
 
 import com.zkteco.attpush.acc.service.AccPushService;
-import com.zkteco.attpush.acc.service.BizAccessInfoService;
+import com.zkteco.attpush.mapper.BizAccessInfoMapper;
 import com.zkteco.attpush.entity.TblBizAccessInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +30,7 @@ public class AccPushProccesor {
     @Autowired
     private AccPushService accPushService;
     @Autowired
-    private BizAccessInfoService bizAccessInfoService;
+    private BizAccessInfoMapper bizAccessInfoMapper;
     private static boolean test = true;
 
     private static List<String> cmds = null;
@@ -302,9 +302,9 @@ public class AccPushProccesor {
     }
 
     @RequestMapping(value = "/testAll")
-    public TblBizAccessInfo testConnection() {
-        TblBizAccessInfo temp = bizAccessInfoService.getByArea("三厂熔解");
-        return temp;
+    public List<TblBizAccessInfo> testConnection() {
+        return bizAccessInfoMapper.getByArea("三厂熔解");
+//        return bizAccessInfoDao.selectById(null);
     }
 
 }
