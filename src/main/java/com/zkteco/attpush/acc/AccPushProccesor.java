@@ -1,6 +1,8 @@
 package com.zkteco.attpush.acc;
 
 import com.zkteco.attpush.acc.service.AccPushService;
+import com.zkteco.attpush.acc.service.BizAccessInfoService;
+import com.zkteco.attpush.entity.TblBizAccessInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,9 +29,9 @@ public class AccPushProccesor {
 
     @Autowired
     private AccPushService accPushService;
+    @Autowired
+    private BizAccessInfoService bizAccessInfoService;
     private static boolean test = true;
-    private static int index = 0;
-    private boolean setOptions = true;
 
     private static List<String> cmds = null;
 
@@ -108,9 +110,6 @@ public class AccPushProccesor {
     @RequestMapping("/getrequest")
     public String heartbeat(String SN) {
 //        System.out.println("进入到心跳请求...." + SN + new Date());
-        if (!setOptions) {
-            return "OK";
-        }
         //cmd.txt 放在d盘
         BufferedReader br = null;
         File file = new File("D://cmd.txt");//elegent
@@ -138,19 +137,13 @@ public class AccPushProccesor {
                 e.printStackTrace();
             }
 
-        } else if (test) {
-            //test = false;
-            if (index < cmds.size()) {
-                System.out.println("命令为...." + cmds.get(index));
-                return cmds.get(index++);
-            } else {
-                test = false;
-            }
-            // return GenerateCmd.cmd();
-            return "OK";
-        } else {
-            return "OK";
         }
+
+        //TODO iterate cached signup personnel info
+        //TODO compare current SN code with SN code from cached personnel info
+        //TODO send personnel info to device
+        //TODO grant the personnel access to the device
+        //TODO remove the personnel info from cached personnel info
         return "OK";
 
     }
@@ -196,6 +189,9 @@ public class AccPushProccesor {
         Map<String, String> param = convertMap(req);
         System.out.println("######请求的参数" + param);
         //sign up for the first time
+        //TODO cache personnel info
+        //TODO cache devices' SN in the same region together with region name and cached personnel info
+        //TODO upload person's info to server with different region names
         if ("tabledata".equals(table) && Objects.equals(param.get("tablename"), "user")) {
             String[] tempParam = ("SN=" + SN + "\t").concat(data).replaceAll("\r\n", "").replaceAll("user ", "").split("\t");
             accPushService.processNewRecord(ArrayToRawRecord(tempParam));
@@ -207,9 +203,11 @@ public class AccPushProccesor {
             return "OK";
         }
         //sign in/out with face
+        //TODO if the person is signing out without his record in the region, then just grant access without uploading to server
         if (table == null) {
             String[] tempParamArray = paramStringToArray(("SN=" + SN + "\t").concat(data));
             Map<String, String> tempParamMap = ArrayToRawRecord(tempParamArray);
+            // if uses white card, then set pin to "V" + cardno
             if (!"0".equals(tempParamMap.get("cardno"))) {
                 tempParamMap.put("pin", "V" + tempParamMap.get("cardno"));
             }
@@ -300,9 +298,13 @@ public class AccPushProccesor {
 
     @RequestMapping(value = "/file")
     public String File(@RequestBody String SN, String cmdid, String fileseq, String contenttype, String count) {
-
-
         return "OK";
+    }
+
+    @RequestMapping(value = "/testAll")
+    public TblBizAccessInfo testConnection() {
+        TblBizAccessInfo temp = bizAccessInfoService.getByArea("三厂熔解");
+        return temp;
     }
 
 }

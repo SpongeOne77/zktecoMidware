@@ -1,11 +1,7 @@
 package com.zkteco.attpush.acc.service;
 
-import com.zkteco.attpush.entity.NewPersonnelRecord;
-import org.springframework.stereotype.Service;
-
 import java.util.Map;
 
-@Service
 public interface AccPushService {
     /**
      * when new employee is signing up

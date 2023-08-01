@@ -74,6 +74,8 @@ public class AccPushServiceImpl implements AccPushService {
         System.out.println("this person is sign " + ("0".equals(tempEmployee.getInoutStatus()) ? "in" : "off"));
         System.out.println(tempEmployee);
         if ("1".equals(tempEmployee.getInoutStatus())) {
+            //TODO calc if the person is in site
+            //if not insite return true
             CompletableFuture.runAsync(() -> {
                 verifyAndRecordLogs(tempEmployee);
             });
@@ -86,7 +88,7 @@ public class AccPushServiceImpl implements AccPushService {
     private String verifyAndRecordLogs(EmployeeSignInOffEntity record) {
         String res = HttpClientUtil.post(uploadUrl + "/real/event", JSON.toJSONString(record));
         Map resObj = (Map) JSON.parse(res);
-        System.out.println("============================= access" + resObj.get("data").toString() + "=============================");
+        System.out.println("============================= access " + resObj.get("data").toString() + "=============================");
         return resObj.get("data").toString();
     }
 
