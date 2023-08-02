@@ -302,8 +302,12 @@ public class AccPushProccesor {
     }
 
     @RequestMapping(value = "/testAll")
-    public List<TblBizAccessInfo> testConnection() {
-        return bizAccessInfoMapper.getByArea("三厂熔解");
+    public boolean testConnection() {
+        Map<String, String> temp = new HashMap<>();
+        temp.put("pin", "10001");
+        temp.put("time", "2023-08-02-16:23");
+        temp.put("SN", "CJDE225260587");
+        return accPushService.processSignInOut(temp);
 //        return bizAccessInfoDao.selectById(null);
     }
 

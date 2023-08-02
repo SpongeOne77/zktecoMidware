@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.zkteco.attpush.acc.service.AccPushService;
 import com.zkteco.attpush.entity.EmployeeSignInOffEntity;
 import com.zkteco.attpush.entity.NewPersonnelRecord;
+import com.zkteco.attpush.mapper.BizAccessInfoMapper;
 import com.zkteco.attpush.utils.HttpClientUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AccPushServiceImpl implements AccPushService {
+    @Autowired
+    public BizAccessInfoMapper bizAccessInfoMapper;
 
     public final static Map<String, NewPersonnelRecord> registerMembers = new HashMap();
 
@@ -74,11 +78,14 @@ public class AccPushServiceImpl implements AccPushService {
         System.out.println("this person is sign " + ("0".equals(tempEmployee.getInoutStatus()) ? "in" : "off"));
         System.out.println(tempEmployee);
         if ("1".equals(tempEmployee.getInoutStatus())) {
-            //TODO calc if the person is in site
-            //if not insite return true
-            CompletableFuture.runAsync(() -> {
-                verifyAndRecordLogs(tempEmployee);
-            });
+            //if the person is not in site(no signing in), then do not upload
+            if (!bizAccessInfoMapper.getByAreaAndPin(tempEmployee).isEmpty()) {
+                CompletableFuture.runAsync(() -> {
+                    verifyAndRecordLogs(tempEmployee);
+                });
+            } else {
+                System.out.println(tempEmployee.getEmployeeNumber() + " not in " + tempEmployee.getArea());
+            }
             return true;
         } else {
             return "true".equals(verifyAndRecordLogs(tempEmployee));

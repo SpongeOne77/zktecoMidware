@@ -21,4 +21,9 @@
         WHERE area = #{area};
     </select>
 
+    <select id="getByAreaAndPin" parameterType="EmployeeSignInOffEntity" resultMap="BizAccessInfoList">
+        <include refid="selectBizAccess" />
+        WHERE employee_number = #{employeeNumber} AND area = #{area};
+    </select>
+
 </mapper>
