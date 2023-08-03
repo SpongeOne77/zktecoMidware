@@ -22,7 +22,7 @@ public class dataSync {
     @RequestMapping(value = "/personnel", method = RequestMethod.POST)
     public String personnel(String address, String area, Boolean cards) {
         System.out.println("[Attpush]: starting personnel sync");
-        if (area == null || "".equals(area)) {
+        if (area == null || area.isEmpty()) {
             System.out.println("[Attpush]: area is null");
             return "[AttPush]: area is null";
         } else {
