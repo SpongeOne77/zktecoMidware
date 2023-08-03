@@ -24,7 +24,7 @@ public class dataSync {
         System.out.println("[Attpush]: starting personnel sync");
         if (area == null || "".equals(area)) {
             System.out.println("[Attpush]: area is null");
-            return "[AttPush]: area is empty";
+            return "[AttPush]: area is null";
         } else {
             System.out.println("[Attpush]: area is " + area);
         }
@@ -37,12 +37,12 @@ public class dataSync {
                 tempEmployee.setEmployeeNumber("V" + personnelCahedMap.get(key));
             } else {
                 tempEmployee.setEmployeeNumber(key);
+                tempEmployee.setEmployeeName(personnelCahedMap.get(key));
+                String photoBase64 = photoUtil.getImgFileToBase64(address + "photos/" + key + ".jpg");
+                tempEmployee.setEmployeePicture("data:image/jpeg;base64," + photoBase64);
             }
-            tempEmployee.setEmployeeName(personnelCahedMap.get(key));
-            String photoBase64 = photoUtil.getImgFileToBase64(address + "photos/" + key + ".jpg");
-            tempEmployee.setEmployeePicture("data:image/jpeg;base64," + photoBase64);
             tempEmployee.setArea(area);
-            HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempEmployee));
+//            HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempEmployee));
         }
         return "dataSync";
     }
