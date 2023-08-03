@@ -22,4 +22,6 @@ public interface AccPushService {
      */
     public boolean processSignInOut(Map<String, String> rawRecord);
 
+    public void test();
+
 }

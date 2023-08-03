@@ -168,10 +168,10 @@ public class AccPushProccesor {
 
     @RequestMapping("/ping")
     public String ping(HttpServletRequest req) {
-//        System.out.println("设备上传时通过Ping请求维持心跳");
+        System.out.println("设备上传时通过Ping请求维持心跳");
 //        System.out.println("#######请求的URL:" + req.getServletPath());
-//        Map<String,String> param = convertMap(req);
-//        System.out.println("######请求的参数"+param.toString());
+        Map<String,String> param = convertMap(req);
+        System.out.println("######请求的参数"+param.toString());
 //        System.out.println("######请求完整URL:"+req.getServletPath()+"?"+param.toString().trim().replace(", ", "&").replace("{", "").replace("}", ""));
         return "OK";
     }
@@ -189,9 +189,6 @@ public class AccPushProccesor {
         Map<String, String> param = convertMap(req);
         System.out.println("######请求的参数" + param);
         //sign up for the first time
-        //TODO cache personnel info
-        //TODO cache devices' SN in the same region together with region name and cached personnel info
-        //TODO upload person's info to server with different region names
         if ("tabledata".equals(table) && Objects.equals(param.get("tablename"), "user")) {
             String[] tempParam = ("SN=" + SN + "\t").concat(data).replaceAll("\r\n", "").replaceAll("user ", "").split("\t");
             accPushService.processNewRecord(ArrayToRawRecord(tempParam));
@@ -203,7 +200,6 @@ public class AccPushProccesor {
             return "OK";
         }
         //sign in/out with face
-        //TODO if the person is signing out without his record in the region, then just grant access without uploading to server
         if (table == null) {
             String[] tempParamArray = paramStringToArray(("SN=" + SN + "\t").concat(data));
             Map<String, String> tempParamMap = ArrayToRawRecord(tempParamArray);
@@ -212,23 +208,10 @@ public class AccPushProccesor {
                 tempParamMap.put("pin", "V" + tempParamMap.get("cardno"));
             }
             boolean access = accPushService.processSignInOut(tempParamMap);
-//            boolean access = true;
             return calcReturnMsg(access, data);
         }
-        // sign in\out with card
-//        if ("rtlog".equals(table)) {
-//            String[] tempParamArray = paramStringToArray(("SN=" + SN + "\t").concat(data));
-//            Map<String, String> tempParam = ArrayToRawRecord(tempParamArray);
-//            if ("0".equals(tempParam.get("cardno"))) {
-//                return "OK";
-//            }
-//            tempParam.put("pin", "V" + tempParam.get("cardno"));
-//            accPushService.processSignInOut(tempParam);
-//        }
 
         return "OK";
-//        System.out.println("######请求完整URL:"+req.getServletPath()+"?"+param.toString().trim().replace(", ", "&").replace("{", "").replace("}", ""));
-//        return "OK";
     }
 
     public String[] paramStringToArray(String rawParam) {
@@ -303,11 +286,13 @@ public class AccPushProccesor {
 
     @RequestMapping(value = "/testAll")
     public boolean testConnection() {
+        accPushService.test();
         Map<String, String> temp = new HashMap<>();
         temp.put("pin", "10001");
         temp.put("time", "2023-08-02-16:23");
         temp.put("SN", "CJDE225260587");
-        return accPushService.processSignInOut(temp);
+        return true;
+//        return accPushService.processSignInOut(temp);
 //        return bizAccessInfoDao.selectById(null);
     }
 

@@ -2,17 +2,23 @@ package com.zkteco.attpush.acc.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.zkteco.attpush.acc.service.AccPushService;
+import com.zkteco.attpush.entity.Employee;
 import com.zkteco.attpush.entity.EmployeeSignInOffEntity;
 import com.zkteco.attpush.entity.NewPersonnelRecord;
+import com.zkteco.attpush.entity.config.Device;
+import com.zkteco.attpush.entity.config.DeviceConfig;
 import com.zkteco.attpush.mapper.BizAccessInfoMapper;
 import com.zkteco.attpush.utils.HttpClientUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 public class AccPushServiceImpl implements AccPushService {
@@ -21,8 +27,13 @@ public class AccPushServiceImpl implements AccPushService {
 
     public final static Map<String, NewPersonnelRecord> registerMembers = new HashMap();
 
+    public final static List<Employee> cachedEmployees = new ArrayList<>();
+
     @Value("#{${area}}")
     private Map<String, Map<String, String>> machineMap;
+
+    @Autowired
+    public DeviceConfig deviceConfig;
 
     @Value("${uploadUrl}")
     private String uploadUrl;
@@ -44,22 +55,35 @@ public class AccPushServiceImpl implements AccPushService {
 
     @Override
     public void processNewRecord(Map<String, String> rawRecord) {
-        if ("0".equals(rawRecord.get("cardno"))) {
-            String recordNo = rawRecord.get("pin");
-            System.out.println("entering processNewRecord");
-            if (!registerMembers.containsKey(recordNo) && !"0".equals(recordNo)) {
-                NewPersonnelRecord tempRecord = new NewPersonnelRecord();
-                Map<String, String> trendInfo = calcTrendInfo(rawRecord.get("SN"));
-                tempRecord.setEmployeeName(rawRecord.get("name"));
-                tempRecord.setEmployeeNumber(recordNo);
-                tempRecord.setArea(trendInfo.get("area"));
-                registerMembers.put(recordNo, tempRecord);
-                System.out.println("cached employee" + registerMembers);
-            }
+        //TODO cache personnel info
+        //TODO cache devices' SN in the same region together with region name and cached personnel info
+        //TODO upload person's info to server with different region names
+        String cardNo = rawRecord.get("cardno");
+        if ("0".equals(cardNo)) {
+            String SN = rawRecord.get("SN");
+            List<Device> devicesInSameArea = getSameRegionDevices(SN);
+            devicesInSameArea.forEach(device -> {
+                Employee newEmployee = new Employee();
+                newEmployee.setEmployeeName(rawRecord.get("name"));
+                newEmployee.setArea(rawRecord.get("area"));
+                newEmployee.setEmployeeNumber(rawRecord.get("pin"));
+                newEmployee.setDevice(SN);
+                //TODO
+
+            });
+            String employeeNumber = rawRecord.get("pin");
+            NewPersonnelRecord tempRecord = new NewPersonnelRecord();
+            Map<String, String> trendInfo = calcTrendInfo(rawRecord.get("SN"));
+            registerMembers.put(employeeNumber, tempRecord);
+            System.out.println("cached employee" + registerMembers);
         } else {
-            System.out.println("Activating card no " + rawRecord.get("cardno"));
-            System.out.println("this record do not upload");
+
         }
+    }
+
+    public List<Device> getSameRegionDevices(String SN) {
+        String region = deviceConfig.getDeviceList().stream().filter(device -> device.getSN().equals(SN)).collect(Collectors.toList()).get(0).getArea();
+        return deviceConfig.getDeviceList().stream().filter(device -> device.getArea().equals(region)).collect(Collectors.toList());
     }
 
     /**
@@ -101,6 +125,10 @@ public class AccPushServiceImpl implements AccPushService {
 
     private Map<String, String> calcTrendInfo(String SN) {
         return machineMap.get(SN);
+    }
+
+    public void test() {
+        System.out.println(getSameRegionDevices("CJDE231960054"));
     }
 
 }

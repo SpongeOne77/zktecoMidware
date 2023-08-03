@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -16,8 +15,6 @@ public class dataSync {
 
     @Value("${uploadUrl}")
     private String uploadUrl;
-
-    private static Map<String, String> personnelCahedMap = new HashMap<>();
 
     @RequestMapping(value = "/personnel", method = RequestMethod.POST)
     public String personnel(String address, String area, Boolean cards) {
@@ -28,7 +25,7 @@ public class dataSync {
         } else {
             System.out.println("[Attpush]: area is " + area);
         }
-        personnelCahedMap = excelUtil.readExcel(address + "employee.xlsx");
+        Map<String, String> personnelCahedMap = excelUtil.readExcel(address + "employee.xlsx");
         System.out.println(personnelCahedMap);
         for (String key : personnelCahedMap.keySet()) {
             System.out.println(key + " " + personnelCahedMap.get(key));
