@@ -1,7 +1,10 @@
 package com.zkteco.attpush.acc.service;
 
+import org.springframework.stereotype.Service;
+
 import java.util.Map;
 
+@Service
 public interface AccPushService {
     /**
      * when new employee is signing up

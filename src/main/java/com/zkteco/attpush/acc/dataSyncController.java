@@ -1,7 +1,10 @@
-package com.zkteco.attpush.utils;
+package com.zkteco.attpush.acc;
 
 import com.alibaba.fastjson.JSON;
 import com.zkteco.attpush.entity.NewPersonnelRecord;
+import com.zkteco.attpush.utils.HttpClientUtil;
+import com.zkteco.attpush.utils.excelUtil;
+import com.zkteco.attpush.utils.photoUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/dataSync")
-public class dataSync {
+public class dataSyncController {
 
     @Value("${uploadUrl}")
     private String uploadUrl;
@@ -32,6 +35,7 @@ public class dataSync {
             NewPersonnelRecord tempEmployee = new NewPersonnelRecord();
             if (cards) {
                 tempEmployee.setEmployeeNumber("V" + personnelCahedMap.get(key));
+                tempEmployee.setEmployeeName(personnelCahedMap.get(key));
             } else {
                 tempEmployee.setEmployeeNumber(key);
                 tempEmployee.setEmployeeName(personnelCahedMap.get(key));
@@ -39,7 +43,7 @@ public class dataSync {
                 tempEmployee.setEmployeePicture("data:image/jpeg;base64," + photoBase64);
             }
             tempEmployee.setArea(area);
-//            HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempEmployee));
+            HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempEmployee));
         }
         return "dataSync";
     }
