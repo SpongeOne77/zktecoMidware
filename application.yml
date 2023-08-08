@@ -7,7 +7,7 @@ area: "{ 'CJDE231960054': { 'area': '三厂熔解', 'direction': '0' }, 'CJDE231
 uploadUrl: "http://localhost:8021/api/control"
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/camera-ai-dbx?&serverTimezone=Asia/Shanghai&useSSL=false
+    url: jdbc:mysql://localhost:3306/camera-ai-dbx?&serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver

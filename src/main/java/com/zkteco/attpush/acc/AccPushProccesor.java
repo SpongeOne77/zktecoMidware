@@ -291,8 +291,8 @@ public class AccPushProccesor {
         temp.put("pin", "10001");
         temp.put("time", "2023-08-02-16:23");
         temp.put("SN", "CJDE225260587");
-        return true;
-//        return accPushService.processSignInOut(temp);
+//        return true;
+        return accPushService.processSignInOut(temp);
 //        return bizAccessInfoDao.selectById(null);
     }
 

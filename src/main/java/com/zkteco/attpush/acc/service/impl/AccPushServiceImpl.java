@@ -61,14 +61,15 @@ public class AccPushServiceImpl implements AccPushService {
         String cardNo = rawRecord.get("cardno");
         if ("0".equals(cardNo)) {
             String SN = rawRecord.get("SN");
-            List<Device> devicesInSameArea = getSameRegionDevices(SN);
+            List<Device> devicesInSameArea = getDeviceInfoFromSameRegion(SN);
             devicesInSameArea.forEach(device -> {
                 Employee newEmployee = new Employee();
                 newEmployee.setEmployeeName(rawRecord.get("name"));
                 newEmployee.setArea(rawRecord.get("area"));
                 newEmployee.setEmployeeNumber(rawRecord.get("pin"));
                 newEmployee.setDevice(SN);
-                //TODO
+                //TODO generate command
+                String updateEmployeeInfoCommand = "C:296:DATA UPDATE userauthorize Pin=1 AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
 
             });
             String employeeNumber = rawRecord.get("pin");
@@ -81,7 +82,7 @@ public class AccPushServiceImpl implements AccPushService {
         }
     }
 
-    public List<Device> getSameRegionDevices(String SN) {
+    public List<Device> getDeviceInfoFromSameRegion(String SN) {
         String region = deviceConfig.getDeviceList().stream().filter(device -> device.getSN().equals(SN)).collect(Collectors.toList()).get(0).getArea();
         return deviceConfig.getDeviceList().stream().filter(device -> device.getArea().equals(region)).collect(Collectors.toList());
     }
@@ -128,7 +129,7 @@ public class AccPushServiceImpl implements AccPushService {
     }
 
     public void test() {
-        System.out.println(getSameRegionDevices("CJDE231960054"));
+        System.out.println(getDeviceInfoFromSameRegion("CJDE231960054"));
     }
 
 }
