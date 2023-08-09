@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.zkteco.attpush.acc.service.AccPushService;
 import com.zkteco.attpush.entity.Employee;
 import com.zkteco.attpush.entity.EmployeeSignInOffEntity;
-import com.zkteco.attpush.entity.NewPersonnelRecord;
 import com.zkteco.attpush.entity.config.Device;
 import com.zkteco.attpush.entity.config.DeviceConfig;
 import com.zkteco.attpush.mapper.BizAccessInfoMapper;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -25,12 +23,9 @@ public class AccPushServiceImpl implements AccPushService {
     @Autowired
     public BizAccessInfoMapper bizAccessInfoMapper;
 
-    public final static Map<String, NewPersonnelRecord> registerMembers = new HashMap();
+    public final static List<Employee> cachedEmployeesServer = new ArrayList<>();
 
-    public final static List<Employee> cachedEmployees = new ArrayList<>();
-
-    @Value("#{${area}}")
-    private Map<String, Map<String, String>> machineMap;
+    public final static List<Employee> cachedEmployeesDevice = new ArrayList<>();
 
     @Autowired
     public DeviceConfig deviceConfig;
@@ -44,48 +39,62 @@ public class AccPushServiceImpl implements AccPushService {
      */
     @Override
     public void processNewPhoto(Map<String, String> rawRecord) {
-        String recordNo = rawRecord.get("pin");
-        if (registerMembers.containsKey(recordNo)) {
-            NewPersonnelRecord personnelRecord = registerMembers.get(recordNo);
-            personnelRecord.setEmployeePicture("data:image/jpeg;base64," + rawRecord.get("content"));
-            HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(personnelRecord));
-            registerMembers.remove(recordNo);
+        String employeeNo = rawRecord.get("pin");
+        String content = rawRecord.get("content");
+        for (Employee employee : cachedEmployeesServer) {
+            if (employee.getEmployeeNumber().equals(employeeNo)) {
+                employee.setEmployeePicture("data:image/jpeg;base64," + content);
+                // upload employee info to server
+                HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(employee));
+                // setting up for employee info sent to device
+                String SN = employee.getDevice();
+                List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
+                devicesInSameArea.forEach(device -> {
+                    Employee tempEmployee = employee;
+                    tempEmployee.setEmployeePicture(content);
+                    tempEmployee.setDevice(device.getSN());
+                    cachedEmployeesDevice.add(tempEmployee);
+                    System.out.println("cached employees for device" + cachedEmployeesDevice);
+//                String updateEmployeeInfoCommand = "C:296:DATA UPDATE userauthorize Pin=" + "1 AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
+                });
+                employee.setIsRecorded(true);
+            }
         }
+        // update cached employees for server, remove if the employee has been recorded
+        cachedEmployeesServer.removeIf(employee -> employee.getIsRecorded().equals(true));
     }
+
 
     @Override
     public void processNewRecord(Map<String, String> rawRecord) {
-        //TODO cache personnel info
-        //TODO cache devices' SN in the same region together with region name and cached personnel info
-        //TODO upload person's info to server with different region names
+        //grab info from rawRecord
         String cardNo = rawRecord.get("cardno");
+        String employeeName = "";
+        String employeeNumber = "";
         if ("0".equals(cardNo)) {
-            String SN = rawRecord.get("SN");
-            List<Device> devicesInSameArea = getDeviceInfoFromSameRegion(SN);
-            devicesInSameArea.forEach(device -> {
-                Employee newEmployee = new Employee();
-                newEmployee.setEmployeeName(rawRecord.get("name"));
-                newEmployee.setArea(rawRecord.get("area"));
-                newEmployee.setEmployeeNumber(rawRecord.get("pin"));
-                newEmployee.setDevice(SN);
-                //TODO generate command
-                String updateEmployeeInfoCommand = "C:296:DATA UPDATE userauthorize Pin=1 AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
-
-            });
-            String employeeNumber = rawRecord.get("pin");
-            NewPersonnelRecord tempRecord = new NewPersonnelRecord();
-            Map<String, String> trendInfo = calcTrendInfo(rawRecord.get("SN"));
-            registerMembers.put(employeeNumber, tempRecord);
-            System.out.println("cached employee" + registerMembers);
+            employeeName = rawRecord.get("name");
+            employeeNumber = rawRecord.get("pin");
         } else {
-
+            employeeName = cardNo;
+            employeeNumber = "V" + cardNo;
         }
+        String SN = rawRecord.get("SN");
+        //setup employee entity
+        Employee newEmployee = new Employee();
+        newEmployee.setEmployeeName(employeeName);
+        newEmployee.setArea(getDeviceInfoFromSameRegionBySN(SN).get(0).getArea());
+        newEmployee.setEmployeeNumber(employeeNumber);
+        newEmployee.setDevice(SN);
+        cachedEmployeesServer.add(newEmployee);
+        System.out.println("cached employees for server" + cachedEmployeesServer);
     }
 
-    public List<Device> getDeviceInfoFromSameRegion(String SN) {
+    public List<Device> getDeviceInfoFromSameRegionBySN(String SN) {
         String region = deviceConfig.getDeviceList().stream().filter(device -> device.getSN().equals(SN)).collect(Collectors.toList()).get(0).getArea();
         return deviceConfig.getDeviceList().stream().filter(device -> device.getArea().equals(region)).collect(Collectors.toList());
     }
+
+
 
     /**
      * when enrolled employee sign in/out
@@ -97,9 +106,9 @@ public class AccPushServiceImpl implements AccPushService {
         EmployeeSignInOffEntity tempEmployee = new EmployeeSignInOffEntity();
         tempEmployee.setTime(rawRecord.get("time"));
         tempEmployee.setEmployeeNumber(rawRecord.get("pin"));
-        Map<String, String> trendInfo = calcTrendInfo(rawRecord.get("SN"));
-        tempEmployee.setInoutStatus(trendInfo.get("direction"));
-        tempEmployee.setArea(trendInfo.get("area"));
+        Device device = getDeviceInfoFromSameRegionBySN(rawRecord.get("SN")).get(0);
+        tempEmployee.setInoutStatus(device.getDirection());
+        tempEmployee.setArea(device.getArea());
         System.out.println("this person is sign " + ("0".equals(tempEmployee.getInoutStatus()) ? "in" : "off"));
         System.out.println(tempEmployee);
         if ("1".equals(tempEmployee.getInoutStatus())) {
@@ -124,12 +133,9 @@ public class AccPushServiceImpl implements AccPushService {
         return resObj.get("data").toString();
     }
 
-    private Map<String, String> calcTrendInfo(String SN) {
-        return machineMap.get(SN);
-    }
 
     public void test() {
-        System.out.println(getDeviceInfoFromSameRegion("CJDE231960054"));
+        System.out.println(getDeviceInfoFromSameRegionBySN("CJDE231960054"));
     }
 
 }

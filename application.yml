@@ -3,7 +3,6 @@ server:
     max-http-header-size=81920:
   port: 8090
 
-area: "{ 'CJDE231960054': { 'area': '三厂熔解', 'direction': '0' }, 'CJDE231960060': { 'area': '三厂熔解', 'direction': '1' }, 'CJDE231960055': { 'area': '三厂熔解', 'direction': '1' }, 'CJDE231960059': { 'area': '三厂熔解', 'direction': '0' }, 'CJDE231860985': { 'area': '四厂熔解', 'direction': '0' }, 'CJDE231860970': { 'area': '四厂熔解', 'direction': '1' }, 'CJDE231860969': { 'area': '四厂熔解', 'direction': '0' }, 'CJDE231860951': { 'area': '四厂熔解', 'direction': '1' }, 'CJDE231960052': { 'area': '一厂熔解', 'direction': '0' }, 'CJDE231860972': { 'area': '一厂熔解', 'direction': '1' }, 'CJDE231860968': { 'area': '一厂熔解', 'direction': '1' }, 'CJDE231960061': { 'area': '一厂熔解', 'direction': '0' }, 'CJDE231860955': { 'area': '三厂造型', 'direction': '0' }, 'CJDE225260588': { 'area': '三厂造型', 'direction': '1' }, 'CJDE231860974': { 'area': '三厂造型', 'direction': '0' }, 'CJDE225260707': { 'area': '三厂造型', 'direction': '1' }, 'CJDE231861051': { 'area': '四厂造型', 'direction': '0' }, 'CJDE225260697': { 'area': '四厂造型', 'direction': '1' }, 'CJDE231960057': { 'area': '四厂造型', 'direction': '0' }, 'CJDE225260584': { 'area': '四厂造型', 'direction': '1' }, 'CJDE225260587' : { 'area': '一厂造型', 'direction': '1' }, 'CJDE231860516': { 'area': '一厂造型', 'direction': '0' }, 'CJDE225260708': { 'area': '一厂造型', 'direction': '1' }, 'CJDE231960053': { 'area': '一厂造型', 'direction': '0' } }"
 uploadUrl: "http://localhost:8021/api/control"
 spring:
   datasource:

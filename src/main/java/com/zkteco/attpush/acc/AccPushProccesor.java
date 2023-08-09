@@ -29,8 +29,7 @@ public class AccPushProccesor {
 
     @Autowired
     private AccPushService accPushService;
-    @Autowired
-    private BizAccessInfoMapper bizAccessInfoMapper;
+
     private static boolean test = true;
 
     private static List<String> cmds = null;
@@ -138,12 +137,6 @@ public class AccPushProccesor {
             }
 
         }
-
-        //TODO iterate cached signup personnel info
-        //TODO compare current SN code with SN code from cached personnel info
-        //TODO send personnel info to device
-        //TODO grant the personnel access to the device
-        //TODO remove the personnel info from cached personnel info
         return "OK";
 
     }

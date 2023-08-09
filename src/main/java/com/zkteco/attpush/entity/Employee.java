@@ -21,4 +21,6 @@ public class Employee {
 
 
     private String employeePicture;
+
+    private Boolean isRecorded = false;
 }
