@@ -1,8 +1,7 @@
 package com.zkteco.attpush.acc;
 
 import com.zkteco.attpush.acc.service.AccPushService;
-import com.zkteco.attpush.mapper.BizAccessInfoMapper;
-import com.zkteco.attpush.entity.TblBizAccessInfo;
+import com.zkteco.attpush.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -218,7 +217,7 @@ public class AccPushProccesor {
             verification = "AUTH=FAIL\r\n";
             System.out.println("Warning: Shall not pass");
         } else {
-            System.out.println("Waining: Access granted");
+            System.out.println("Warning: Access granted");
             verification = "AUTH=SUCCESS\n";
             cmd = "C:221:CONTROL DEVICE 1 1 1 9\r\n\r\n";
         }
@@ -232,9 +231,7 @@ public class AccPushProccesor {
      * @apiNote transform 'a=1 b=2' patterns into Map
      */
     public Map<String, String> ArrayToRawRecord(String[] target) {
-        return Arrays.stream(target).collect(Collectors.toMap(a -> a.split("=")[0], a -> {
-            return a.split("=").length < 2 ? "0" : a.split("=")[1];
-        }));
+        return Arrays.stream(target).collect(Collectors.toMap(a -> a.split("=")[0], a -> a.split("=").length < 2 ? "0" : a.split("=")[1]));
     }
 
 

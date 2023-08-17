@@ -26,4 +26,8 @@
         WHERE employee_number = #{employeeNumber} AND area = #{area};
     </select>
 
+    <select id="getAllPersonnel" resultMap="BizAccessInfoList">
+        <include refid="selectBizAccess" />
+    </select>
+
 </mapper>

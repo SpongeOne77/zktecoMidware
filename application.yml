@@ -41,6 +41,10 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 日志输出
   type-aliases-package: com.zkteco.attpush.entity
 
+jobs:
+  cron: 55 59 23 * * ?
+  cron1: 0/5 * * * * ?
+
 deviceConfig:
   deviceList:
     - SN: CJDE231960054

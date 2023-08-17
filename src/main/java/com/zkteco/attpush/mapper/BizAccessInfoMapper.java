@@ -11,4 +11,7 @@ public interface BizAccessInfoMapper {
     public List<TblBizAccessInfo> getByArea(String area);
 
     public List<TblBizAccessInfo> getByAreaAndPin(EmployeeSignInOffEntity currentEmployee);
+
+    public List<TblBizAccessInfo> getAllPersonnel();
+
 }
