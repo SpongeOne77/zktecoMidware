@@ -197,7 +197,8 @@ public class AccPushProccesor {
             Map<String, String> tempParamMap = ArrayToRawRecord(tempParamArray);
             // if uses white card, then set pin to "V" + cardno
             if (!"0".equals(tempParamMap.get("cardno"))) {
-                tempParamMap.put("pin", "V" + tempParamMap.get("cardno"));
+//                tempParamMap.put("pin", "V" + tempParamMap.get("cardno"));
+                tempParamMap.put("pin", "V9689023");
             }
             boolean access = accPushService.processSignInOut(tempParamMap);
             return calcReturnMsg(access, data);
@@ -231,7 +232,9 @@ public class AccPushProccesor {
      * @apiNote transform 'a=1 b=2' patterns into Map
      */
     public Map<String, String> ArrayToRawRecord(String[] target) {
-        return Arrays.stream(target).collect(Collectors.toMap(a -> a.split("=")[0], a -> a.split("=").length < 2 ? "0" : a.split("=")[1]));
+        return Arrays.stream(target).collect(Collectors.toMap(a -> a.split("=")[0], a -> {
+            return a.split("=").length < 2 ? "0" : a.split("=")[1];
+        }));
     }
 
 
@@ -276,11 +279,11 @@ public class AccPushProccesor {
 
     @RequestMapping(value = "/testAll")
     public boolean testConnection() {
-        accPushService.test();
+//        accPushService.test();
         Map<String, String> temp = new HashMap<>();
         temp.put("pin", "10001");
         temp.put("time", "2023-08-02-16:23");
-        temp.put("SN", "CJDE225260587");
+        temp.put("SN", "CJDE231960055");
 //        return true;
         return accPushService.processSignInOut(temp);
 //        return bizAccessInfoDao.selectById(null);

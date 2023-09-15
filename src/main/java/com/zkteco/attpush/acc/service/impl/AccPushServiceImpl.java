@@ -2,6 +2,7 @@ package com.zkteco.attpush.acc.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.zkteco.attpush.acc.service.AccPushService;
+import com.zkteco.attpush.entity.Command;
 import com.zkteco.attpush.entity.Employee;
 import com.zkteco.attpush.entity.EmployeeSignInOffEntity;
 import com.zkteco.attpush.entity.config.Device;
@@ -26,6 +27,8 @@ public class AccPushServiceImpl implements AccPushService {
     public final static List<Employee> cachedEmployeesServer = new ArrayList<>();
 
     public final static List<Employee> cachedEmployeesDevice = new ArrayList<>();
+
+    public final static List<Command> cachedCommands = new ArrayList<>();
 
     @Autowired
     public DeviceConfig deviceConfig;
@@ -53,8 +56,24 @@ public class AccPushServiceImpl implements AccPushService {
                     Employee tempEmployee = employee;
                     tempEmployee.setEmployeePicture(content);
                     tempEmployee.setDevice(device.getSN());
+                    String tempEmployeeNumber = tempEmployee.getEmployeeNumber();
+                    if (tempEmployeeNumber.startsWith("V")) {
+                        Command tempCommand = new Command();
+                        tempCommand.setSN(device.getSN());
+                        tempCommand.setCmd("C:295:DATA UPDATE user CardNo=" + tempEmployeeNumber.substring(1) + " Pin= Password= Group=0 StartTime=0 EndTime=0 Name= Privilege=0");
+                        cachedCommands.add(tempCommand);
+                    } else {
+                        // tempCmd1 for record without picture
+                        // whereas tempCmd2 contains picture and pin
+                        Command tempCommand1 = new Command();
+                        Command tempCommand2 = new Command();
+                        tempCommand1.setSN(device.getSN());
+                        tempCommand1.setCmd("C:295:DATA UPDATE user CardNo= Pin=" + tempEmployeeNumber + " Password=234 Group=0 StartTime=0 EndTime=0 Name=" + tempEmployee.getEmployeeName() + " Privilege=0");
+                        tempCommand2.setSN(device.getSN());
+                        tempCommand2.setCmd("C:525:DATA UPDATE biophoto Pin=" + tempEmployeeNumber + " Type=9 Size=" + tempEmployee.getEmployeePicture().length() + " Content=" + tempEmployee.getEmployeePicture() + " Format=0");
+                    }
                     cachedEmployeesDevice.add(tempEmployee);
-                    System.out.println("cached employees for device" + cachedEmployeesDevice);
+                    System.out.println("cached employees for sending to device" + cachedEmployeesDevice);
 //                String updateEmployeeInfoCommand = "C:296:DATA UPDATE userauthorize Pin=" + "1 AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
                 });
                 employee.setIsRecorded(true);
@@ -87,11 +106,16 @@ public class AccPushServiceImpl implements AccPushService {
         newEmployee.setDevice(SN);
         cachedEmployeesServer.add(newEmployee);
         System.out.println("cached employees for server" + cachedEmployeesServer);
+        List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
     }
 
     public List<Device> getDeviceInfoFromSameRegionBySN(String SN) {
         String region = deviceConfig.getDeviceList().stream().filter(device -> device.getSN().equals(SN)).collect(Collectors.toList()).get(0).getArea();
         return deviceConfig.getDeviceList().stream().filter(device -> device.getArea().equals(region)).collect(Collectors.toList());
+    }
+
+    public Device getDeviceInfoBySN(String SN) {
+        return deviceConfig.getDeviceList().stream().filter(device -> device.getSN().equals(SN)).collect(Collectors.toList()).get(0);
     }
 
 
@@ -106,10 +130,11 @@ public class AccPushServiceImpl implements AccPushService {
         EmployeeSignInOffEntity tempEmployee = new EmployeeSignInOffEntity();
         tempEmployee.setTime(rawRecord.get("time"));
         tempEmployee.setEmployeeNumber(rawRecord.get("pin"));
-        Device device = getDeviceInfoFromSameRegionBySN(rawRecord.get("SN")).get(0);
+        Device device = getDeviceInfoBySN(rawRecord.get("SN"));
+        System.out.println("[info]this device is " + device);
         tempEmployee.setInoutStatus(device.getDirection());
         tempEmployee.setArea(device.getArea());
-        System.out.println("this person is sign " + ("0".equals(tempEmployee.getInoutStatus()) ? "in" : "off"));
+        System.out.println("[info]this person is signing " + ("0".equals(tempEmployee.getInoutStatus()) ? "in" : "off"));
         System.out.println(tempEmployee);
         if ("1".equals(tempEmployee.getInoutStatus())) {
             //if the person is not in site(no signing in), then do not upload
@@ -135,7 +160,7 @@ public class AccPushServiceImpl implements AccPushService {
 
 
     public void test() {
-        System.out.println(getDeviceInfoFromSameRegionBySN("CJDE231960054"));
+        System.out.println(getDeviceInfoFromSameRegionBySN("CJDE231960055"));
     }
 
 }

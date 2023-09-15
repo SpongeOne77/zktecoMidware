@@ -42,7 +42,7 @@ mybatis-plus:
   type-aliases-package: com.zkteco.attpush.entity
 
 jobs:
-  cron: 55 59 23 * * ?
+  cron: 30 59 23 * * ?
   cron1: 0/5 * * * * ?
 
 deviceConfig:
