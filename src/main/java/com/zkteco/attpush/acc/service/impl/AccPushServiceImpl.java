@@ -91,22 +91,33 @@ public class AccPushServiceImpl implements AccPushService {
         String employeeName = "";
         String employeeNumber = "";
         if ("0".equals(cardNo)) {
+            //registration for person
             employeeName = rawRecord.get("name");
             employeeNumber = rawRecord.get("pin");
         } else {
+            //registration for card
             employeeName = cardNo;
             employeeNumber = "V" + cardNo;
         }
         String SN = rawRecord.get("SN");
-        //setup employee entity
-        Employee newEmployee = new Employee();
-        newEmployee.setEmployeeName(employeeName);
-        newEmployee.setArea(getDeviceInfoFromSameRegionBySN(SN).get(0).getArea());
-        newEmployee.setEmployeeNumber(employeeNumber);
-        newEmployee.setDevice(SN);
-        cachedEmployeesServer.add(newEmployee);
-        System.out.println("cached employees for server" + cachedEmployeesServer);
         List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
+        String finalEmployeeNumber = employeeNumber.startsWith("V") ? employeeNumber.substring(1) : employeeNumber;
+        devicesInSameArea.forEach(device -> {
+            Command newUserCommand = new Command();
+            Command userAuthCommand = new Command();
+            newUserCommand.setSN(device.getSN());
+            userAuthCommand.setSN(device.getSN());
+            //grant access
+            newUserCommand.setCmd("C:296:DATA UPDATE userauthorize Pin=" + finalEmployeeNumber.substring(1) + " AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1");
+        });
+        //setup employee entity
+//        Employee newEmployee = new Employee();
+//        newEmployee.setEmployeeName(employeeName);
+//        newEmployee.setArea(getDeviceInfoFromSameRegionBySN(SN).get(0).getArea());
+//        newEmployee.setEmployeeNumber(employeeNumber);
+//        newEmployee.setDevice(SN);
+//        cachedEmployeesServer.add(newEmployee);
+//        System.out.println("cached employees for server" + cachedEmployeesServer);
     }
 
     public List<Device> getDeviceInfoFromSameRegionBySN(String SN) {
@@ -117,7 +128,6 @@ public class AccPushServiceImpl implements AccPushService {
     public Device getDeviceInfoBySN(String SN) {
         return deviceConfig.getDeviceList().stream().filter(device -> device.getSN().equals(SN)).collect(Collectors.toList()).get(0);
     }
-
 
 
     /**
