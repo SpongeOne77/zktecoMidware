@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.smartcardio.Card;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class AccPushServiceImpl implements AccPushService {
                         Command tempCommand1 = new Command();
                         Command tempCommand2 = new Command();
                         tempCommand1.setSN(device.getSN());
-                        tempCommand1.setCmd("C:295:DATA UPDATE user CardNo= Pin=" + tempEmployeeNumber + " Password=234 Group=0 StartTime=0 EndTime=0 Name=" + tempEmployee.getEmployeeName() + " Privilege=0");
+                        tempCommand1.setCmd("C:295:DATA UPDATE user CardNo= Pin=" + tempEmployeeNumber + " Password= Group=0 StartTime=0 EndTime=0 Name=" + tempEmployee.getEmployeeName() + " Privilege=0");
                         tempCommand2.setSN(device.getSN());
                         tempCommand2.setCmd("C:525:DATA UPDATE biophoto Pin=" + tempEmployeeNumber + " Type=9 Size=" + tempEmployee.getEmployeePicture().length() + " Content=" + tempEmployee.getEmployeePicture() + " Format=0");
                     }
@@ -102,22 +103,41 @@ public class AccPushServiceImpl implements AccPushService {
         String SN = rawRecord.get("SN");
         List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
         String finalEmployeeNumber = employeeNumber.startsWith("V") ? employeeNumber.substring(1) : employeeNumber;
+        String newUserCmd = "";
+        String userAuthCmd = "";
+        //build cmds
+        if (employeeNumber.startsWith("V")) {
+            newUserCmd = "C:295:DATA UPDATE user CardNo=" + employeeNumber.substring(1) + " Pin= Password= Group=0 StartTime=0 EndTime=0 Name=" + employeeNumber.substring(1) +" Privilege=0";
+        } else {
+            newUserCmd = "C:295:DATA UPDATE user CardNo= Pin=" + employeeNumber + " Password= Group=0 StartTime=0 EndTime=0 Name=" + employeeName + " Privilege=0";
+            //cache employee info with SN
+            Employee newEmployee = new Employee();
+            newEmployee.setEmployeeName(employeeName);
+            newEmployee.setArea(devicesInSameArea.get(0).getArea());
+            newEmployee.setEmployeeNumber(employeeNumber);
+            newEmployee.setDevice(SN);
+            cachedEmployeesServer.add(newEmployee);
+            System.out.println("cached employees for server" + cachedEmployeesServer);
+        }
+        userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + finalEmployeeNumber.substring(1) + " AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
+
+        String finalNewUserCmd = newUserCmd;
+        String finalUserAuthCmd = userAuthCmd;
         devicesInSameArea.forEach(device -> {
+            //register for card
             Command newUserCommand = new Command();
             Command userAuthCommand = new Command();
             newUserCommand.setSN(device.getSN());
             userAuthCommand.setSN(device.getSN());
-            //grant access
-            newUserCommand.setCmd("C:296:DATA UPDATE userauthorize Pin=" + finalEmployeeNumber.substring(1) + " AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1");
+            //set register cmd
+            newUserCommand.setCmd(finalNewUserCmd);
+            //set access-granting cmd
+            userAuthCommand.setCmd(finalUserAuthCmd);
+            //cache them
+            cachedCommands.add(newUserCommand);
+            cachedCommands.add(userAuthCommand);
         });
-        //setup employee entity
-//        Employee newEmployee = new Employee();
-//        newEmployee.setEmployeeName(employeeName);
-//        newEmployee.setArea(getDeviceInfoFromSameRegionBySN(SN).get(0).getArea());
-//        newEmployee.setEmployeeNumber(employeeNumber);
-//        newEmployee.setDevice(SN);
-//        cachedEmployeesServer.add(newEmployee);
-//        System.out.println("cached employees for server" + cachedEmployeesServer);
+        System.out.println("Cached cmd list" + cachedCommands);
     }
 
     public List<Device> getDeviceInfoFromSameRegionBySN(String SN) {
