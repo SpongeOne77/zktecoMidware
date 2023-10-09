@@ -27,8 +27,6 @@ public class AccPushServiceImpl implements AccPushService {
 
     public final static List<Employee> cachedEmployeesServer = new ArrayList<>();
 
-    public final static List<Employee> cachedEmployeesDevice = new ArrayList<>();
-
     public final static List<Command> cachedCommands = new ArrayList<>();
 
     @Autowired
@@ -43,6 +41,7 @@ public class AccPushServiceImpl implements AccPushService {
      */
     @Override
     public void processNewPhoto(Map<String, String> rawRecord) {
+        //get employeeNumber and photo from raw data
         String employeeNo = rawRecord.get("pin");
         String content = rawRecord.get("content");
         for (Employee employee : cachedEmployeesServer) {
@@ -54,28 +53,10 @@ public class AccPushServiceImpl implements AccPushService {
                 String SN = employee.getDevice();
                 List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
                 devicesInSameArea.forEach(device -> {
-                    Employee tempEmployee = employee;
-                    tempEmployee.setEmployeePicture(content);
-                    tempEmployee.setDevice(device.getSN());
-                    String tempEmployeeNumber = tempEmployee.getEmployeeNumber();
-                    if (tempEmployeeNumber.startsWith("V")) {
-                        Command tempCommand = new Command();
-                        tempCommand.setSN(device.getSN());
-                        tempCommand.setCmd("C:295:DATA UPDATE user CardNo=" + tempEmployeeNumber.substring(1) + " Pin= Password= Group=0 StartTime=0 EndTime=0 Name= Privilege=0");
-                        cachedCommands.add(tempCommand);
-                    } else {
-                        // tempCmd1 for record without picture
-                        // whereas tempCmd2 contains picture and pin
-                        Command tempCommand1 = new Command();
-                        Command tempCommand2 = new Command();
-                        tempCommand1.setSN(device.getSN());
-                        tempCommand1.setCmd("C:295:DATA UPDATE user CardNo= Pin=" + tempEmployeeNumber + " Password= Group=0 StartTime=0 EndTime=0 Name=" + tempEmployee.getEmployeeName() + " Privilege=0");
-                        tempCommand2.setSN(device.getSN());
-                        tempCommand2.setCmd("C:525:DATA UPDATE biophoto Pin=" + tempEmployeeNumber + " Type=9 Size=" + tempEmployee.getEmployeePicture().length() + " Content=" + tempEmployee.getEmployeePicture() + " Format=0");
-                    }
-                    cachedEmployeesDevice.add(tempEmployee);
-                    System.out.println("cached employees for sending to device" + cachedEmployeesDevice);
-//                String updateEmployeeInfoCommand = "C:296:DATA UPDATE userauthorize Pin=" + "1 AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
+                    Command tempCommand = new Command();
+                    tempCommand.setSN(device.getSN());
+                    tempCommand.setCmd("C:525:DATA UPDATE biophoto Pin=" + employee.getEmployeeNumber() + " Type=9 Size=" + employee.getEmployeePicture().length() + " Content=" + employee.getEmployeePicture() + " Format=0");
+                    cachedCommands.add(tempCommand);
                 });
                 employee.setIsRecorded(true);
             }
@@ -89,27 +70,18 @@ public class AccPushServiceImpl implements AccPushService {
     public void processNewRecord(Map<String, String> rawRecord) {
         //grab info from rawRecord
         String cardNo = rawRecord.get("cardno");
+        String SN = rawRecord.get("SN");
         String employeeName = "";
         String employeeNumber = "";
+        List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
+        String newUserCmd = "";
+        String userAuthCmd = "";
         if ("0".equals(cardNo)) {
             //registration for person
             employeeName = rawRecord.get("name");
             employeeNumber = rawRecord.get("pin");
-        } else {
-            //registration for card
-            employeeName = cardNo;
-            employeeNumber = "V" + cardNo;
-        }
-        String SN = rawRecord.get("SN");
-        List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
-        String finalEmployeeNumber = employeeNumber.startsWith("V") ? employeeNumber.substring(1) : employeeNumber;
-        String newUserCmd = "";
-        String userAuthCmd = "";
-        //build cmds
-        if (employeeNumber.startsWith("V")) {
-            newUserCmd = "C:295:DATA UPDATE user CardNo=" + employeeNumber.substring(1) + " Pin= Password= Group=0 StartTime=0 EndTime=0 Name=" + employeeNumber.substring(1) +" Privilege=0";
-        } else {
             newUserCmd = "C:295:DATA UPDATE user CardNo= Pin=" + employeeNumber + " Password= Group=0 StartTime=0 EndTime=0 Name=" + employeeName + " Privilege=0";
+            userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + employeeNumber + " AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
             //cache employee info with SN
             Employee newEmployee = new Employee();
             newEmployee.setEmployeeName(employeeName);
@@ -118,8 +90,18 @@ public class AccPushServiceImpl implements AccPushService {
             newEmployee.setDevice(SN);
             cachedEmployeesServer.add(newEmployee);
             System.out.println("cached employees for server" + cachedEmployeesServer);
+        } else {
+            //registration for card
+            employeeName = cardNo;
+            employeeNumber = "V" + cardNo;
+            newUserCmd = "C:295:DATA UPDATE user CardNo=" + cardNo + " Pin= Password= Group=0 StartTime=0 EndTime=0 Name=" + cardNo + " Privilege=0";
+            userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + cardNo + " AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
+            Employee tempEmployee = new Employee();
+            tempEmployee.setEmployeeName(employeeName);
+            tempEmployee.setArea(devicesInSameArea.get(0).getArea());
+            tempEmployee.setEmployeeNumber(employeeNumber);
+            HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempEmployee));
         }
-        userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + finalEmployeeNumber.substring(1) + " AuthorizeTimezoneId=1 AuthorizeDoorId=1 DevID=1";
 
         String finalNewUserCmd = newUserCmd;
         String finalUserAuthCmd = userAuthCmd;
@@ -137,7 +119,11 @@ public class AccPushServiceImpl implements AccPushService {
             cachedCommands.add(newUserCommand);
             cachedCommands.add(userAuthCommand);
         });
-        System.out.println("Cached cmd list" + cachedCommands);
+        System.out.println("Cached cmd list");
+        cachedCommands.forEach(cmd -> {
+            System.out.println(cmd.getSN());
+            System.out.println(cmd.getCmd());
+        });
     }
 
     public List<Device> getDeviceInfoFromSameRegionBySN(String SN) {
@@ -187,6 +173,12 @@ public class AccPushServiceImpl implements AccPushService {
         System.out.println("============================= access " + resObj.get("data").toString() + "=============================");
         return resObj.get("data").toString();
     }
+
+    private Command getAvailableCommand(String SN) {
+        return cachedCommands.stream().filter((cmd) -> cmd.getSN().equals(SN)).collect(Collectors.toList()).get(0);
+    }
+
+
 
 
     public void test() {

@@ -281,11 +281,14 @@ public class AccPushProccesor {
     public boolean testConnection() {
 //        accPushService.test();
         Map<String, String> temp = new HashMap<>();
-        temp.put("pin", "10001");
-        temp.put("time", "2023-08-02-16:23");
+//        temp.put("pin", "10001");
+//        temp.put("name", "张三");
+        temp.put("cardno", "V7588285");
+//        temp.put("time", "2023-08-02-16:23");
         temp.put("SN", "CJDE231960055");
-//        return true;
-        return accPushService.processSignInOut(temp);
+        accPushService.processNewRecord(temp);
+        return true;
+//        return accPushService.processSignInOut(temp);
 //        return bizAccessInfoDao.selectById(null);
     }
 

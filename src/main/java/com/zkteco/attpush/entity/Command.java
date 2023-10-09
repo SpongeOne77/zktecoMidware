@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class Command {
-    String SN;
-    String cmd;
+    private String SN;
+    private String cmd;
+    private Boolean availability = true;
 }
