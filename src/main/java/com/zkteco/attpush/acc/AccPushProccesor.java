@@ -283,10 +283,12 @@ public class AccPushProccesor {
         Map<String, String> temp = new HashMap<>();
 //        temp.put("pin", "10001");
 //        temp.put("name", "张三");
-        temp.put("cardno", "V7588285");
+        temp.put("cardno", "7588285");
 //        temp.put("time", "2023-08-02-16:23");
         temp.put("SN", "CJDE231960055");
         accPushService.processNewRecord(temp);
+        String returnCmd = accPushService.combineCommands(accPushService.getCommandListBySN("CJDE231960055"));
+        System.out.println(returnCmd);
         return true;
 //        return accPushService.processSignInOut(temp);
 //        return bizAccessInfoDao.selectById(null);

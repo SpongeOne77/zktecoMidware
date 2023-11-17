@@ -119,11 +119,11 @@ public class AccPushServiceImpl implements AccPushService {
             cachedCommands.add(newUserCommand);
             cachedCommands.add(userAuthCommand);
         });
-        System.out.println("Cached cmd list");
-        cachedCommands.forEach(cmd -> {
-            System.out.println(cmd.getSN());
-            System.out.println(cmd.getCmd());
-        });
+//        System.out.println("Cached cmd list");
+//        cachedCommands.forEach(cmd -> {
+//            System.out.println(cmd.getSN());
+//            System.out.println(cmd.getCmd());
+//        });
     }
 
     public List<Device> getDeviceInfoFromSameRegionBySN(String SN) {
@@ -152,19 +152,16 @@ public class AccPushServiceImpl implements AccPushService {
         tempEmployee.setArea(device.getArea());
         System.out.println("[info]this person is signing " + ("0".equals(tempEmployee.getInoutStatus()) ? "in" : "off"));
         System.out.println(tempEmployee);
-        if ("1".equals(tempEmployee.getInoutStatus())) {
-            //if the person is not in site(no signing in), then do not upload
-            if (!bizAccessInfoMapper.getByAreaAndPin(tempEmployee).isEmpty()) {
-                CompletableFuture.runAsync(() -> {
-                    verifyAndRecordLogs(tempEmployee);
-                });
-            } else {
-                System.out.println(tempEmployee.getEmployeeNumber() + " not in " + tempEmployee.getArea());
-            }
-            return true;
-        } else {
+        if ("0".equals(tempEmployee.getInoutStatus())) {
             return "true".equals(verifyAndRecordLogs(tempEmployee));
         }
+        //if the person is not in site(no signing in), then do not upload
+        if (!bizAccessInfoMapper.getByAreaAndPin(tempEmployee).isEmpty()) {
+            verifyAndRecordLogs(tempEmployee);
+        } else {
+            System.out.println(tempEmployee.getEmployeeNumber() + " not in " + tempEmployee.getArea());
+        }
+        return true;
     }
 
     private String verifyAndRecordLogs(EmployeeSignInOffEntity record) {
@@ -174,8 +171,16 @@ public class AccPushServiceImpl implements AccPushService {
         return resObj.get("data").toString();
     }
 
-    private Command getAvailableCommand(String SN) {
-        return cachedCommands.stream().filter((cmd) -> cmd.getSN().equals(SN)).collect(Collectors.toList()).get(0);
+    public List<Command> getCommandListBySN(String SN) {
+        return cachedCommands.stream().filter((cmd) -> cmd.getSN().equals(SN)).collect(Collectors.toList());
+    }
+
+    public String combineCommands(List<Command> commands) {
+        StringBuilder finalCommand = new StringBuilder();
+        for(Command command: commands) {
+            finalCommand.append(command.getCmd()).append("\\r\\n\\r\\n");
+        }
+        return finalCommand.toString();
     }
 
 

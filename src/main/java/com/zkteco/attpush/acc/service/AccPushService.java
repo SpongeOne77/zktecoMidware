@@ -1,7 +1,9 @@
 package com.zkteco.attpush.acc.service;
 
+import com.zkteco.attpush.entity.Command;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -24,6 +26,20 @@ public interface AccPushService {
      * @param rawRecord
      */
     public boolean processSignInOut(Map<String, String> rawRecord);
+
+    /**
+     * calculate commands by SN code
+     * @param SN
+     * @return
+     */
+    public List<Command> getCommandListBySN(String SN);
+
+    /**
+     * turn list of commands into a string
+     * @param commands
+     * @return
+     */
+    public String combineCommands(List<Command> commands);
 
     public void test();
 
