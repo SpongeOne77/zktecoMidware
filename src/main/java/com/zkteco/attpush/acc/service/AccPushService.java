@@ -41,6 +41,8 @@ public interface AccPushService {
      */
     public String combineCommands(List<Command> commands);
 
+    public String heartbeatCheck(String SN);
+
     public void test();
 
 }

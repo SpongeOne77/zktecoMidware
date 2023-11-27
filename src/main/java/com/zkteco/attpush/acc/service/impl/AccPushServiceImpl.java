@@ -183,6 +183,10 @@ public class AccPushServiceImpl implements AccPushService {
         return finalCommand.toString();
     }
 
+    public String heartbeatCheck(String SN) {
+        return combineCommands(getCommandListBySN(SN));
+    }
+
 
 
 
