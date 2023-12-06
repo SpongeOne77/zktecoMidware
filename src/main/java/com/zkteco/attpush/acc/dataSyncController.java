@@ -1,20 +1,25 @@
 package com.zkteco.attpush.acc;
 
 import com.alibaba.fastjson.JSON;
+import com.zkteco.attpush.acc.service.AccPushService;
 import com.zkteco.attpush.entity.NewPersonnelRecord;
 import com.zkteco.attpush.utils.HttpClientUtil;
 import com.zkteco.attpush.utils.excelUtil;
 import com.zkteco.attpush.utils.photoUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/dataSync")
 public class dataSyncController {
+    @Autowired
+    private AccPushService accPushService;
 
     @Value("${uploadUrl}")
     private String uploadUrl;
@@ -59,5 +64,21 @@ public class dataSyncController {
         tempemployee.setArea(area);
         HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempemployee));
         return "[Attpush]: loaded " + employeeNumber + " " + employeeName;
+    }
+
+    @RequestMapping(value = "/registerOnePerson", method = RequestMethod.POST)
+    public String registerOnePerson(String employeeNumber, String employeeName, String photoFolder, String SN) {
+        System.out.println("[Attpush]: starting registering one person");
+        System.out.println(employeeName + " " + employeeNumber);
+        Map<String, String> rawData = new HashMap<>();
+        rawData.put("pin", employeeNumber);
+        rawData.put("name", employeeName);
+        rawData.put("SN", SN);
+        rawData.put("cardno", "0");
+        accPushService.processNewRecord(rawData);
+        String photoBase64 = photoUtil.getImgFileToBase64(photoFolder + employeeNumber + ".jpg");
+        rawData.put("content", "data:image/jpeg;base64," + photoBase64);
+        accPushService.processNewPhoto(rawData);
+        return "OK";
     }
 }

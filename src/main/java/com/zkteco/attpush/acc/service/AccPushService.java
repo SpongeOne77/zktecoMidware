@@ -41,6 +41,13 @@ public interface AccPushService {
      */
     public String combineCommands(List<Command> commands);
 
+    /**
+     * add new command to cached list
+     * @param command
+     * @return
+     */
+    public boolean addCommand(Command command);
+
     public String heartbeatCheck(String SN);
 
     public void test();

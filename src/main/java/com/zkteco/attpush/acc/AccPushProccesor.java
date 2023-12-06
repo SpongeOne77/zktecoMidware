@@ -1,6 +1,7 @@
 package com.zkteco.attpush.acc;
 
 import com.zkteco.attpush.acc.service.AccPushService;
+import com.zkteco.attpush.entity.Command;
 import com.zkteco.attpush.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -242,16 +243,23 @@ public class AccPushProccesor {
     }
 
 
-    @RequestMapping(value = "/querydata", method = RequestMethod.POST)
-    public String query(@RequestBody String querrydata) {
+    @RequestMapping(value = "/querydata",method = RequestMethod.POST)
+    public String[] query(@RequestBody String querrydata,HttpServletRequest req){
         String[] dataArray = querrydata.split("\r\n");
 
         int count = dataArray.length;
         String tableName = dataArray[0].split(" ")[0];
-        System.out.println("查询信息是。。。。。" + querrydata);
-        String returnValue = tableName + "=" + count;
+        System.out.println("查询信息是。。。。。"+querrydata);
+        String returnValue = tableName+"="+count;
         System.out.println(returnValue);
-        return returnValue;
+        // System.out.println(returnValue);
+        // System.out.println("#######请求设备上传的实时记录为的URL:"+req.getServletPath());
+        Map<String,String> param = convertMap(req);
+        StringBuffer sb = new StringBuffer();
+        // System.out.println("######请求的参数"+param.toString());
+        // System.out.println("######请求完整URL:"+req.getServletPath()+"?"+param.toString().trim().replace(", ", "&").replace("{", "").replace("}", ""));
+
+        return dataArray;
 
     }
 
@@ -268,10 +276,10 @@ public class AccPushProccesor {
 
     @RequestMapping(value = "/devicecmd")
     public String deviceCmd(@RequestBody String cmdResult, HttpServletRequest req) {
-        System.out.println("命令返回的结果为..." + cmdResult);
+        System.out.println("[devicecmd]命令返回的结果为..." + cmdResult);
 //        System.out.println("#######请求的URL:"+req.getServletPath());
         Map<String, String> param = convertMap(req);
-//        System.out.println("######请求的参数"+param.toString());
+        System.out.println("######请求的参数"+param.toString());
 //        System.out.println("######请求完整URL:"+req.getServletPath()+"?"+param.toString().trim().replace(", ", "&").replace("{", "").replace("}", ""));
         return "OK";
     }
@@ -296,6 +304,15 @@ public class AccPushProccesor {
         return true;
 //        return accPushService.processSignInOut(temp);
 //        return bizAccessInfoDao.selectById(null);
+    }
+
+    @RequestMapping(value = "/query")
+    public boolean dataQuery(String SN) {
+        Command queryCmd = new Command();
+        queryCmd.setSN(SN);
+        queryCmd.setCmd("C:415:DATA QUERY tablename=user,fielddesc=*,filter=*");
+        accPushService.addCommand(queryCmd);
+        return true;
     }
 
 }
