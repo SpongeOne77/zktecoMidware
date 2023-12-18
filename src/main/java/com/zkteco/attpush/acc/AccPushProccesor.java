@@ -244,7 +244,7 @@ public class AccPushProccesor {
 
 
     @RequestMapping(value = "/querydata",method = RequestMethod.POST)
-    public String[] query(@RequestBody String querrydata,HttpServletRequest req){
+    public String query(@RequestBody String querrydata,HttpServletRequest req){
         String[] dataArray = querrydata.split("\r\n");
 
         int count = dataArray.length;
@@ -259,7 +259,7 @@ public class AccPushProccesor {
         // System.out.println("######请求的参数"+param.toString());
         // System.out.println("######请求完整URL:"+req.getServletPath()+"?"+param.toString().trim().replace(", ", "&").replace("{", "").replace("}", ""));
 
-        return dataArray;
+        return "OK";
 
     }
 
