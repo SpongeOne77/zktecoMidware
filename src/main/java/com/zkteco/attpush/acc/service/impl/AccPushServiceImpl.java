@@ -13,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.smartcardio.Card;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -187,13 +185,14 @@ public class AccPushServiceImpl implements AccPushService {
 
     public String heartbeatCheck(String SN) {
         List<Command> commandList = getCommandListBySN(SN);
-        cachedCommands.removeIf(device -> device.getSN().equals(SN));
-        if (commandList.isEmpty()) {
+        if (!commandList.isEmpty()) {
+            String commondString = combineCommands(commandList);
+            System.out.println(SN + " has cached commands: " + commondString);
+            cachedCommands.removeIf(device -> device.getSN().equals(SN));
+            return commondString;
+        } else {
             return "OK";
         }
-        String commondString = combineCommands(commandList);
-        System.out.println(SN + " has cached commands: " + commondString);
-        return commondString;
     }
 
     public void printCommandInfo() {
@@ -204,6 +203,7 @@ public class AccPushServiceImpl implements AccPushService {
     @Override
     public boolean addCommand(Command command) {
         cachedCommands.add(command);
+        System.out.println("[attpush]: command added /n" + command);
         return true;
     }
 

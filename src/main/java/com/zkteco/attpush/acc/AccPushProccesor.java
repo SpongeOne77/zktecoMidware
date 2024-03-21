@@ -137,12 +137,7 @@ public class AccPushProccesor {
             }
 
         }
-        String CMD = accPushService.heartbeatCheck(SN);
-        if ("".equals(CMD)) {
-            return "OK";
-        } else {
-            return CMD;
-        }
+        return accPushService.heartbeatCheck(SN);
     }
 
     public Map<String, String> convertMap(HttpServletRequest request) {
