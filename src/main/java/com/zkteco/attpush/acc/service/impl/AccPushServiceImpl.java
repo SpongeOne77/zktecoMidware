@@ -79,7 +79,7 @@ public class AccPushServiceImpl implements AccPushService {
             //registration for person
             employeeName = rawRecord.get("name");
             employeeNumber = rawRecord.get("pin");
-            newUserCmd = "C:295:DATA UPDATE user CardNo=/tPin=" + employeeNumber + "/tPassword=/tGroup=0/tStartTime=0/tEndTime=0/tName=" + employeeName + "/tPrivilege=0";
+            newUserCmd = "C:295:DATA UPDATE user CardNo= Pin=" + employeeNumber + "/tPassword=/tGroup=0/tStartTime=0/tEndTime=0/tName=" + employeeName + "/tPrivilege=0";
             userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + employeeNumber + "/tAuthorizeTimezoneId=1/tAuthorizeDoorId=1/tDevID=1";
             //cache employee info with SN
             Employee newEmployee = new Employee();
@@ -88,7 +88,7 @@ public class AccPushServiceImpl implements AccPushService {
             newEmployee.setEmployeeNumber(employeeNumber);
             newEmployee.setDevice(SN);
             cachedEmployeesServer.add(newEmployee);
-            System.out.println("cached employees for server" + cachedEmployeesServer);
+            System.out.println("cached employees for server" + newEmployee.getEmployeeName());
         } else {
             //registration for card
             employeeName = cardNo;
@@ -203,7 +203,7 @@ public class AccPushServiceImpl implements AccPushService {
     @Override
     public boolean addCommand(Command command) {
         cachedCommands.add(command);
-        System.out.println("[attpush]: command added /n" + command);
+//        System.out.println("[attpush]: command added /n" + command);
         return true;
     }
 
