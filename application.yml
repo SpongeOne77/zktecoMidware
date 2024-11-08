@@ -72,7 +72,8 @@ deviceConfig:
       direction: 0
 
 
-    - SN: CJDE231860970
+#    - SN: CJDE231860970
+    - SN: FAC1243301202
       area: 四厂熔解
       direction: 1
 

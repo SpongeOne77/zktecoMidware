@@ -2,7 +2,11 @@ package com.zkteco.attpush.acc;
 
 import com.alibaba.fastjson.JSON;
 import com.zkteco.attpush.acc.service.AccPushService;
+import com.zkteco.attpush.entity.Command;
+import com.zkteco.attpush.entity.Employee;
 import com.zkteco.attpush.entity.NewPersonnelRecord;
+import com.zkteco.attpush.entity.config.Device;
+import com.zkteco.attpush.mapper.BizEmployeeMapper;
 import com.zkteco.attpush.utils.HttpClientUtil;
 import com.zkteco.attpush.utils.excelUtil;
 import com.zkteco.attpush.utils.photoUtil;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +28,9 @@ public class dataSyncController {
 
     @Value("${uploadUrl}")
     private String uploadUrl;
+
+    @Autowired
+    private BizEmployeeMapper bizEmployeeMapper;
 
     @RequestMapping(value = "/personnel", method = RequestMethod.POST)
     public String personnel(String address, String area, Boolean cards) {
@@ -79,6 +87,62 @@ public class dataSyncController {
         String photoBase64 = photoUtil.getImgFileToBase64(photoFolder + employeeNumber + ".jpg");
         rawData.put("content", "data:image/jpeg;base64," + photoBase64);
         accPushService.processNewPhoto(rawData);
+        return "OK";
+    }
+
+    @RequestMapping(value="/clearData", method = RequestMethod.POST)
+    public String clearData(String SN) {
+        Command command = new Command();
+        command.setSN(SN);
+//        command.setCmd("C:53328:DATA DELETE user Pin=*");
+        command.setCmd("C:53328:DATA DELETE user Pin=*");
+        accPushService.addCommand(command);
+        return "OK";
+    }
+
+    @RequestMapping(value="/initConfig", method = RequestMethod.POST)
+    public String initConfig(String SN) {
+        Command command = new Command();
+        command.setSN(SN);
+//        command.setCmd("C:53328:DATA DELETE user Pin=*");
+        command.setCmd("C:405:SET OPTIONS AutoServerFunOn=1,AutoServerMode=1,Door1SensorType=1,Door1MultiCardOpenDoor=0\n");
+        accPushService.addCommand(command);
+        return "OK";
+    }
+
+    @RequestMapping(value="/restart", method = RequestMethod.POST)
+    public String restart(String SN) {
+        Command command = new Command();
+        command.setSN(SN);
+        command.setCmd("C:223:CONTROL DEVICE 03000000");
+        accPushService.addCommand(command);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/restoreData", method = RequestMethod.POST)
+    public String restoreData(String SN) {
+        System.out.println("[Attpush]: starting restoring data for device" + SN);
+        Device currentDevice = accPushService.getDeviceInfoBySN(SN);
+//        this.clearData(SN);
+        //TODO get all employee info
+        List<Employee> employeeList = bizEmployeeMapper.getByArea(currentDevice.getArea());
+        //TODO add them on by one
+        employeeList.forEach((employee) -> {
+            Map<String, String> rawData = new HashMap<>();
+            rawData.put("SN", SN);
+            rawData.put("name", employee.getEmployeeName());
+            String employeeNumber = employee.getEmployeeNumber();
+            if (employeeNumber.startsWith("V")) {
+                rawData.put("cardno", employeeNumber.substring(1));
+            } else {
+                rawData.put("pin", employeeNumber);
+            }
+            String rawPicBase64 = employee.getEmployeePicture();
+            String picture = rawPicBase64.substring(rawPicBase64.indexOf("base64,/") + 7);
+            rawData.put("content", picture);
+            accPushService.processNewRecord(rawData);
+            accPushService.processNewPhoto(rawData);
+        });
         return "OK";
     }
 }

@@ -24,7 +24,7 @@ public class TblBizAccessInfo implements Serializable {
 
     private String area;
 
-    private String time;
+    private Byte[] employeePicture;
 
     private Date createTime;
 }

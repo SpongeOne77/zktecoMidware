@@ -85,8 +85,8 @@ public class AccPushProccesor {
         System.out.println("进入到push请求.....");
 //        System.out.println("#######请求的URL:"+req.getServletPath());
         Map<String, String> param = convertMap(req);
-//        System.out.println("######请求的参数"+param.toString());
-//        System.out.println("######请求完整URL:"+req.getServletPath()+"?"+param.toString().trim().replace(", ", "&").replace("{", "").replace("}", ""));
+        System.out.println("######请求的参数"+param.toString());
+        System.out.println("######请求完整URL:"+req.getServletPath()+"?"+param.toString().trim().replace(", ", "&").replace("{", "").replace("}", ""));
         StringBuffer sb = new StringBuffer();
         sb.append("ServerVersion=3.0.1\n");
         sb.append("ServerName=ADMS\n");

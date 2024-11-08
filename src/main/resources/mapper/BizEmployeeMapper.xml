@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkteco.attpush.mapper.BizEmployeeMapper">
+
+    <resultMap id="BizEmployeeList" type="Employee">
+        <result property="employeeId" column="employee_id"/>
+        <result property="employeeNumber" column="employee_number"/>
+        <result property="employeeName" column="employee_name"/>
+        <result property="area" column="area"/>
+        <result property="employeePicture" column="employee_picture"/>
+    </resultMap>
+
+    <sql id="selectBizEmployeeList">
+        SELECT employee_number,employee_name,area, employee_picture FROM tbl_biz_contrl_employee
+    </sql>
+
+    <select id="getByArea" parameterType="java.lang.String" resultMap="BizEmployeeList">
+        <include refid="selectBizEmployeeList" />
+        WHERE area = #{area};
+    </select>
+</mapper>

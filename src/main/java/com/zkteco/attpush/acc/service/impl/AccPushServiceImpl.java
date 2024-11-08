@@ -46,14 +46,14 @@ public class AccPushServiceImpl implements AccPushService {
             if (employee.getEmployeeNumber().equals(employeeNo)) {
                 employee.setEmployeePicture("data:image/jpeg;base64," + content);
                 // upload employee info to server
-                HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(employee));
+//                HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(employee));
                 // setting up for employee info sent to device
                 String SN = employee.getDevice();
                 List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
                 devicesInSameArea.forEach(device -> {
                     Command tempCommand = new Command();
                     tempCommand.setSN(device.getSN());
-                    tempCommand.setCmd("C:525:DATA UPDATE biophoto Pin=" + employee.getEmployeeNumber() + "/tType=9/tSize=" + content.length() + "/tContent=" + content + "/tFormat=0");
+                    tempCommand.setCmd("C:525:DATA UPDATE biophoto PIN=" + employee.getEmployeeNumber() + "\tType=0\tFormat=0\tUrl=\tSize=" + content.length() + "\tContent=" + content);
                     cachedCommands.add(tempCommand);
                 });
                 employee.setIsRecorded(true);
@@ -79,8 +79,8 @@ public class AccPushServiceImpl implements AccPushService {
             //registration for person
             employeeName = rawRecord.get("name");
             employeeNumber = rawRecord.get("pin");
-            newUserCmd = "C:295:DATA UPDATE user CardNo= Pin=" + employeeNumber + "/tPassword=/tGroup=0/tStartTime=0/tEndTime=0/tName=" + employeeName + "/tPrivilege=0";
-            userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + employeeNumber + "/tAuthorizeTimezoneId=1/tAuthorizeDoorId=1/tDevID=1";
+            newUserCmd = "C:295:DATA UPDATE user CardNo=\tPin=" + employeeNumber + "\tPassword=\tGroup=0\tStartTime=0\tEndTime=0\tName=" + employeeName + "\tPrivilege=0";
+            userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + employeeNumber + "\tAuthorizeTimezoneId=1\tAuthorizeDoorId=15\t";
             //cache employee info with SN
             Employee newEmployee = new Employee();
             newEmployee.setEmployeeName(employeeName);
@@ -93,8 +93,8 @@ public class AccPushServiceImpl implements AccPushService {
             //registration for card
             employeeName = cardNo;
             employeeNumber = "V" + cardNo;
-            newUserCmd = "C:295:DATA UPDATE user CardNo=" + cardNo + " Pin=/tPassword=/tGroup=0/tStartTime=0/tEndTime=0/tName=" + cardNo + "/tPrivilege=0";
-            userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + cardNo + "/tAuthorizeTimezoneId=1/tAuthorizeDoorId=1/tDevID=1";
+            newUserCmd = "C:295:DATA UPDATE user CardNo=" + cardNo + " Pin=\tPassword=\tGroup=0\tStartTime=0\tEndTime=0\tName=" + cardNo + "\tPrivilege=0";
+            userAuthCmd = "C:296:DATA UPDATE userauthorize Pin=" + cardNo + "\tAuthorizeTimezoneId=1\tAuthorizeDoorId=1\tDevID=1";
             Employee tempEmployee = new Employee();
             tempEmployee.setEmployeeName(employeeName);
             tempEmployee.setArea(devicesInSameArea.get(0).getArea());
@@ -178,7 +178,7 @@ public class AccPushServiceImpl implements AccPushService {
     public String combineCommands(List<Command> commands) {
         StringBuilder finalCommand = new StringBuilder();
         for(Command command: commands) {
-            finalCommand.append(command.getCmd()).append("\\r\\n\\r\\n");
+            finalCommand.append(command.getCmd()).append("\n");
         }
         return finalCommand.toString();
     }

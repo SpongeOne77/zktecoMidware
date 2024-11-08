@@ -1,6 +1,7 @@
 package com.zkteco.attpush.acc.service;
 
 import com.zkteco.attpush.entity.Command;
+import com.zkteco.attpush.entity.config.Device;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +34,13 @@ public interface AccPushService {
      * @return
      */
     public List<Command> getCommandListBySN(String SN);
+
+    /**
+     *
+     * @param SN
+     * @return
+     */
+    public Device getDeviceInfoBySN(String SN);
 
     /**
      * turn list of commands into a string
