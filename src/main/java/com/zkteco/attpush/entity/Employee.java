@@ -19,6 +19,8 @@ public class Employee {
      */
     private String device;
 
+    private String cardno;
+
 
     private String employeePicture;
 

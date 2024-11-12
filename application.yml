@@ -4,6 +4,7 @@ server:
   port: 8090
 
 uploadUrl: "http://localhost:8021/api/control"
+photoFolder: "D://富士和/rj/photos/"
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/camera-ai-dbx?&serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=UTF-8
@@ -165,3 +166,9 @@ deviceConfig:
     - SN: CJDE231960053
       area: 一厂造型
       direction: 0
+
+  adminList:
+    - 10001
+    - 09030333
+    - 01030043
+    - 03090123

@@ -2,6 +2,7 @@ package com.zkteco.attpush.acc;
 
 import com.alibaba.fastjson.JSON;
 import com.zkteco.attpush.acc.service.AccPushService;
+import com.zkteco.attpush.acc.service.DataSyncService;
 import com.zkteco.attpush.entity.Command;
 import com.zkteco.attpush.entity.Employee;
 import com.zkteco.attpush.entity.NewPersonnelRecord;
@@ -22,9 +23,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/dataSync")
-public class dataSyncController {
+public class DataSyncController {
     @Autowired
     private AccPushService accPushService;
+
+    @Autowired
+    private DataSyncService dataSyncService;
 
     @Value("${uploadUrl}")
     private String uploadUrl;
@@ -85,7 +89,7 @@ public class dataSyncController {
         rawData.put("cardno", "0");
         accPushService.processNewRecord(rawData);
         String photoBase64 = photoUtil.getImgFileToBase64(photoFolder + employeeNumber + ".jpg");
-        rawData.put("content", "data:image/jpeg;base64," + photoBase64);
+        rawData.put("content", photoBase64);
         accPushService.processNewPhoto(rawData);
         return "OK";
     }
@@ -126,23 +130,10 @@ public class dataSyncController {
 //        this.clearData(SN);
         //TODO get all employee info
         List<Employee> employeeList = bizEmployeeMapper.getByArea(currentDevice.getArea());
-        //TODO add them on by one
-        employeeList.forEach((employee) -> {
-            Map<String, String> rawData = new HashMap<>();
-            rawData.put("SN", SN);
-            rawData.put("name", employee.getEmployeeName());
-            String employeeNumber = employee.getEmployeeNumber();
-            if (employeeNumber.startsWith("V")) {
-                rawData.put("cardno", employeeNumber.substring(1));
-            } else {
-                rawData.put("pin", employeeNumber);
-            }
-            String rawPicBase64 = employee.getEmployeePicture();
-            String picture = rawPicBase64.substring(rawPicBase64.indexOf("base64,/") + 7);
-            rawData.put("content", picture);
-            accPushService.processNewRecord(rawData);
-            accPushService.processNewPhoto(rawData);
-        });
+        //TODO generate commands
+        dataSyncService.restoreRecords(employeeList, SN);
+        //TODO add commands to queue
+
         return "OK";
     }
 }

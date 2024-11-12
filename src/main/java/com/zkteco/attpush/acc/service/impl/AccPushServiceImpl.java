@@ -53,7 +53,7 @@ public class AccPushServiceImpl implements AccPushService {
                 devicesInSameArea.forEach(device -> {
                     Command tempCommand = new Command();
                     tempCommand.setSN(device.getSN());
-                    tempCommand.setCmd("C:525:DATA UPDATE biophoto PIN=" + employee.getEmployeeNumber() + "\tType=0\tFormat=0\tUrl=\tSize=" + content.length() + "\tContent=" + content);
+                    tempCommand.setCmd("C:525:DATA UPDATE biophoto PIN=" + employee.getEmployeeNumber() + "\tType=9\tFormat=0\tUrl=\tSize=" + content.length() + "\tContent=" + content);
                     cachedCommands.add(tempCommand);
                 });
                 employee.setIsRecorded(true);
@@ -184,15 +184,30 @@ public class AccPushServiceImpl implements AccPushService {
     }
 
     public String heartbeatCheck(String SN) {
-        List<Command> commandList = getCommandListBySN(SN);
-        if (!commandList.isEmpty()) {
-            String commondString = combineCommands(commandList);
-            System.out.println(SN + " has cached commands: " + commondString);
-            cachedCommands.removeIf(device -> device.getSN().equals(SN));
-            return commondString;
-        } else {
-            return "OK";
+        StringBuilder commandString = new StringBuilder();
+        for (Command command : cachedCommands) {
+            if (command.getSN().equals(SN) && command.getAvailability() && command.getCmd().startsWith("C:29")) {
+                commandString.append(command.getCmd()).append("\n");
+                command.setAvailability(false);
+            }
+        };
+        if (commandString.length() > 0) {
+            cachedCommands.removeIf(cmd -> !cmd.getAvailability());
+            System.out.println(SN + " has cached commands: " + commandString.toString());
+            return commandString.toString();
         }
+
+        //if no user and auth exist, then search for other cmds
+        for (Command command : cachedCommands) {
+            if (command.getSN().equals(SN) && command.getAvailability()) {
+                commandString.append(command.getCmd()).append("\r\n\r\n");
+                command.setAvailability(false);
+                cachedCommands.removeIf(cmd -> !cmd.getAvailability());
+                System.out.println(SN + " has cached commands: " + commandString.substring(0, 20));
+                return commandString.toString();
+            }
+        }
+        return "OK";
     }
 
     public void printCommandInfo() {

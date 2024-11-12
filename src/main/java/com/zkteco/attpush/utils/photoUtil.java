@@ -2,6 +2,7 @@ package com.zkteco.attpush.utils;
 
 import sun.misc.BASE64Encoder;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,12 @@ public class photoUtil {
      * imgFile 图片本地存储路径
      */
     public static String getImgFileToBase64(String imgFile) {
+        File file = new File(imgFile);
+        if (!file.exists()) {
+            System.out.println(imgFile + "does not exist");
+            return null;
+        }
+
         //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
         InputStream inputStream = null;
         byte[] buffer = null;

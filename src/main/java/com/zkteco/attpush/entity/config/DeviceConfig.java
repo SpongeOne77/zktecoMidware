@@ -11,4 +11,5 @@ import java.util.List;
 @ConfigurationProperties(prefix = "deviceConfig")
 public class DeviceConfig {
     private List<Device> deviceList;
+    private List<String> adminList;
 }
