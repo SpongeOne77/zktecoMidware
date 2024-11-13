@@ -94,6 +94,16 @@ public class DataSyncController {
         return "OK";
     }
 
+    @RequestMapping(value="testServe", method = RequestMethod.POST)
+    public String testServe(String cmd, String employeeNumber, String photoFolder, String SN) {
+        Command tmpCommand = new Command();
+        String photoBase64 = photoUtil.getImgFileToBase64(photoFolder + employeeNumber + ".jpg");
+        tmpCommand.setSN(SN);
+        tmpCommand.setCmd(cmd + photoBase64);
+        accPushService.addCommand(tmpCommand);
+        return tmpCommand.getCmd();
+    }
+
     @RequestMapping(value="/clearData", method = RequestMethod.POST)
     public String clearData(String SN) {
         Command command = new Command();

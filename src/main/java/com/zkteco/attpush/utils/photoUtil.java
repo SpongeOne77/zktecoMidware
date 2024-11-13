@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 
 public class photoUtil {
     /**
@@ -42,8 +43,9 @@ public class photoUtil {
                 }
             }
         }
+
         // 对字节数组Base64编码
-        return new BASE64Encoder().encode(buffer);
+        return Base64.getEncoder().encodeToString(buffer);
     }
 
 }

@@ -106,7 +106,7 @@ public class AccPushProccesor {
      * 处理心跳请求
      *
      */
-    @RequestMapping("/getrequest")
+    @RequestMapping(value="/getrequest")
     public String heartbeat(String SN) {
 //        System.out.println("进入到心跳请求...." + SN + new Date());
         //cmd.txt 放在d盘

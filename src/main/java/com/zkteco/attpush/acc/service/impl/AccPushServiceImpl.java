@@ -53,8 +53,16 @@ public class AccPushServiceImpl implements AccPushService {
                 devicesInSameArea.forEach(device -> {
                     Command tempCommand = new Command();
                     tempCommand.setSN(device.getSN());
-                    tempCommand.setCmd("C:525:DATA UPDATE biophoto PIN=" + employee.getEmployeeNumber() + "\tType=9\tFormat=0\tUrl=\tSize=" + content.length() + "\tContent=" + content);
+                    tempCommand.setCmd("C:525:DATA UPDATE biophoto PIN=" +
+                            employee.getEmployeeNumber() +
+                            "\tType=9\tSize=" +
+                            content.length() +
+                            "\tContent=" +
+                            content +
+                            "\tFormat=0\tUrl=\tPostBackTmpFlag=0");
                     cachedCommands.add(tempCommand);
+//                    C:${CmdID}:DATA${SP}UPDATE${SP}biophoto${SP}PIN=${XXX}${HT}Type=${XXX}${HT}Size=${XXX}${HT}Content=${XXX}$
+//                    {HT}Format=${XXX}${HT}Url=${XXX}${HT}PostBackTmpFlag=${XXX}
                 });
                 employee.setIsRecorded(true);
             }
@@ -200,7 +208,7 @@ public class AccPushServiceImpl implements AccPushService {
         //if no user and auth exist, then search for other cmds
         for (Command command : cachedCommands) {
             if (command.getSN().equals(SN) && command.getAvailability()) {
-                commandString.append(command.getCmd()).append("\r\n\r\n");
+                commandString.append(command.getCmd()).append("\n");
                 command.setAvailability(false);
                 cachedCommands.removeIf(cmd -> !cmd.getAvailability());
                 System.out.println(SN + " has cached commands: " + commandString.substring(0, 20));

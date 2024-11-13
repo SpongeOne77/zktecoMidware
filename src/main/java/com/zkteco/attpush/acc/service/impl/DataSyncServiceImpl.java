@@ -41,17 +41,36 @@ public class DataSyncServiceImpl implements DataSyncService {
             cachedCommands.add(authCommand);
 
             if (record.getEmployeePicture() != null) {
-                Command userPicCommand = new Command();
-                String rawPicBase64 = record.getEmployeePicture();
-                String picture = rawPicBase64.substring(rawPicBase64.indexOf("base64,/") + 7);
-//                    String picture = photoUtil.getImgFileToBase64(photoFolder + record.getEmployeeNumber() + ".jpg");
-                userPicCommand.setSN(SN);
-//                C:4:DATA UPDATE biophoto PIN=456123	Type=9	Format=0	Url=	Size=41304	Content=
-                userPicCommand.setCmd("C:525:DATA UPDATE biophoto PIN=" + record.getEmployeeNumber() + "\tType=9\tFormat=0\tUrl=\tSize=" + picture.length() + "\tContent=" + picture);
+                Command userPicCommand = getPicCommand(SN, record);
                 cachedCommands.add(userPicCommand);
 
             }
         };
+    }
+
+    private Command getPicCommand(String SN, Employee record) {
+        Command userPicCommand = new Command();
+//        String rawPicBase64 = record.getEmployeePicture();
+//        String picture = rawPicBase64.substring(rawPicBase64.indexOf("base64,/") + 7);
+        String picture = photoUtil.getImgFileToBase64(photoFolder + record.getEmployeeNumber() + ".jpg");
+        userPicCommand.setSN(SN);
+//                C:4:DATA UPDATE biophoto PIN=456123	Type=9	Format=0	Url=	Size=41304	Content=
+        if (picture != null) {
+        String pictureCmdString = "C:" +
+                record.getEmployeeNumber() +
+                ":DATA UPDATE biophoto PIN=" +
+                record.getEmployeeNumber() +
+                "\tType=9\tSize=" +
+                picture.length() +
+                "\tContent=" +
+                picture +
+                "\tFormat=0\tUrl=\tPostBackTmpFlag=0";
+//        userPicCommand.setCmd("C:" + record.getEmployeeNumber() + ":DATA UPDATE biophoto PIN=" + record.getEmployeeNumber() + "\tType=9\tFormat=0\tUrl=\tSize=" + picture.length() + "\tContent=" + picture + "\r\n\r\n");
+        userPicCommand.setCmd(pictureCmdString);
+        } else {
+            userPicCommand.setCmd("OK");
+        }
+        return userPicCommand;
     }
 
     private String generateUserCommand(Employee record) {
