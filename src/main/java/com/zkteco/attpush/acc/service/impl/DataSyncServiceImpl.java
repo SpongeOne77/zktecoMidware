@@ -45,7 +45,7 @@ public class DataSyncServiceImpl implements DataSyncService {
                 cachedCommands.add(userPicCommand);
 
             }
-        };
+        }
     }
 
     private Command getPicCommand(String SN, Employee record) {

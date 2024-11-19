@@ -73,13 +73,12 @@ deviceConfig:
       direction: 0
 
 
-#    - SN: CJDE231860970
     - SN: FAC1243301202
       area: 四厂熔解
       direction: 1
 
 
-    - SN: CJDE231860969
+    - SN: CKIK213460115
       area: 四厂熔解
       direction: 0
 
@@ -168,7 +167,7 @@ deviceConfig:
       direction: 0
 
   adminList:
-    - 10001
-    - 09030333
-    - 01030043
-    - 03090123
+    - '10001'
+    - '09030333'
+    - '01030043'
+    - '03090123'
