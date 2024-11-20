@@ -193,12 +193,14 @@ public class AccPushServiceImpl implements AccPushService {
 
     public String heartbeatCheck(String SN) {
         StringBuilder commandString = new StringBuilder();
-        for (int i = 0; i < cachedCommands.size(); i++) {
-            Command command = cachedCommands.get(i);
+        int recordsCount = 0;
+        for (Command cachedCommand : cachedCommands) {
+            if (recordsCount >= 128) break;
             // due to terminal issue, batch service have to be within 128 records
-            if (command.getSN().equals(SN) && command.getAvailability() && command.getCmd().startsWith("C:29") && i < 127) {
-                commandString.append(command.getCmd()).append("\n");
-                command.setAvailability(false);
+            if (cachedCommand.getSN().equals(SN) && cachedCommand.getAvailability() && cachedCommand.getCmd().startsWith("C:29")) {
+                commandString.append(cachedCommand.getCmd()).append("\n");
+                cachedCommand.setAvailability(false);
+                recordsCount++;
             }
         }
         if (commandString.length() > 0) {
@@ -213,7 +215,6 @@ public class AccPushServiceImpl implements AccPushService {
                 commandString.append(command.getCmd()).append("\n");
                 command.setAvailability(false);
                 cachedCommands.removeIf(cmd -> !cmd.getAvailability());
-                System.out.println(SN + " has cached commands: " + commandString.substring(0, 20));
                 return commandString.toString();
             }
         }
@@ -228,7 +229,7 @@ public class AccPushServiceImpl implements AccPushService {
     @Override
     public boolean addCommand(Command command) {
         cachedCommands.add(command);
-        System.out.println("[attpush]: command added /n" + command);
+        System.out.println("[attpush]: command added \n" + command);
         return true;
     }
 

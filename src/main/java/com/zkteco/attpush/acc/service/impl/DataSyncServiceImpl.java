@@ -86,6 +86,7 @@ public class DataSyncServiceImpl implements DataSyncService {
         String password = "";
         String Privilege = "0";
         if (deviceConfig.getAdminList().contains(employee.getEmployeeNumber())) {
+            System.out.println(employee.getEmployeeNumber() + " is admin \n");
             Privilege = "14";
             password = employee.getEmployeeNumber();
         }

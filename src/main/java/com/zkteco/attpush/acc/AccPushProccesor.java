@@ -170,12 +170,13 @@ public class AccPushProccesor {
 
     @RequestMapping(value = "/cdata", method = RequestMethod.POST)
     public String handleForm(@RequestBody String data, String SN, HttpServletRequest req, String table, String AuthType) {
-//        if (new ArrayList<String>() {{
-//            add("options");
-//            add("rtlog");
-//        }}.contains(table)) {
-//            return "OK";
-//        }
+        if (new ArrayList<String>() {{
+            add("options");
+            add("rtlog");
+            add("rtstate");
+        }}.contains(table)) {
+            return "OK";
+        }
         System.out.println("上传的表名为：....。。。。。。。。" + table);
         System.out.println("设备上传的实时记录为..." + data + "序列号。。。。。。。" + SN);
         Map<String, String> param = convertMap(req);

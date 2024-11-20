@@ -48,7 +48,7 @@ jobs:
 
 deviceConfig:
   deviceList:
-    - SN: CJDE231960054
+    - SN: FAC1244501312
       area: 三厂熔解
       direction: 0
 
