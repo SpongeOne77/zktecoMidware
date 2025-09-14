@@ -7,6 +7,7 @@ import com.zkteco.attpush.entity.Command;
 import com.zkteco.attpush.entity.Employee;
 import com.zkteco.attpush.entity.NewPersonnelRecord;
 import com.zkteco.attpush.entity.config.Device;
+import com.zkteco.attpush.entity.config.DeviceConfig;
 import com.zkteco.attpush.mapper.BizEmployeeMapper;
 import com.zkteco.attpush.utils.HttpClientUtil;
 import com.zkteco.attpush.utils.excelUtil;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -35,6 +37,7 @@ public class DataSyncController {
 
     @Autowired
     private BizEmployeeMapper bizEmployeeMapper;
+    private DeviceConfig deviceConfig;
 
     @RequestMapping(value = "/personnel", method = RequestMethod.POST)
     public String personnel(String address, String area, Boolean cards) {
@@ -65,19 +68,6 @@ public class DataSyncController {
         return "dataSync";
     }
 
-    @RequestMapping(value = "/loadOnePerson", method = RequestMethod.POST)
-    public String loadOnePerson(String employeeNumber, String employeeName, String photoFolder, String area) {
-        System.out.println("[Attpush]: starting loading one person");
-        NewPersonnelRecord tempemployee = new NewPersonnelRecord();
-        tempemployee.setEmployeeNumber(employeeNumber);
-        tempemployee.setEmployeeName(employeeName);
-        String photoBase64 = photoUtil.getImgFileToBase64(photoFolder + employeeNumber + ".jpg");
-        tempemployee.setEmployeePicture("data:image/jpeg;base64," + photoBase64);
-        tempemployee.setArea(area);
-        HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(tempemployee));
-        return "[Attpush]: loaded " + employeeNumber + " " + employeeName;
-    }
-
     @RequestMapping(value = "/registerOnePerson", method = RequestMethod.POST)
     public String registerOnePerson(String employeeNumber, String employeeName, String photoFolder, String SN) {
         System.out.println("[Attpush]: starting registering one person");
@@ -94,23 +84,40 @@ public class DataSyncController {
         return "OK";
     }
 
-    @RequestMapping(value="testServe", method = RequestMethod.POST)
-    public String testServe(String cmd, String employeeNumber, String photoFolder, String SN) {
-        Command tmpCommand = new Command();
-        String photoBase64 = photoUtil.getImgFileToBase64(photoFolder + employeeNumber + ".jpg");
-        tmpCommand.setSN(SN);
-        tmpCommand.setCmd(cmd + photoBase64);
-        accPushService.addCommand(tmpCommand);
-        return tmpCommand.getCmd();
+    @RequestMapping(value="/clearData", method = RequestMethod.POST)
+    public String clearData(@RequestParam String SN,
+                            @RequestParam(required = false) String Pin,
+                            @RequestParam(required = false) String Pins) {
+        if (SN == null || SN.trim().isEmpty()) {
+            return "[Attpush]: SN is null or SN is empty";
+        }
+        if (Pin != null && Pins != null) {
+            return "[Attpush]: can not pass pin and pins at the same time";
+        }
+        if (Pins != null) {
+            dataSyncService.batchDeleteUsers(SN, Pins.split(","));
+            return "OK";
+        }
+        if (!"".equals(Pin) && Pin != null) {
+            dataSyncService.deleteUser(SN, Pin.trim());
+
+        } else {
+            dataSyncService.clearAllData(SN);
+        }
+        return "OK";
     }
 
-    @RequestMapping(value="/clearData", method = RequestMethod.POST)
-    public String clearData(String SN) {
-        Command command = new Command();
-        command.setSN(SN);
-//        command.setCmd("C:53328:DATA DELETE user Pin=*");
-        command.setCmd("C:53328:DATA DELETE user Pin=*");
-        accPushService.addCommand(command);
+    @RequestMapping(value="/clearByArea", method = RequestMethod.POST)
+    public String clearByArea(@RequestParam String area,
+                              @RequestParam List<String> pins,
+                              @RequestParam(required = false) Boolean deleteAll) {
+        if (area == null || area.trim().isEmpty()) {
+            return "[Attpush]: area can not be empty";
+        }
+        if ((pins == null || pins.isEmpty()) && (deleteAll == null || !deleteAll)) {
+            return "[Attpush]: pins/deleteAll can not be empty";
+        }
+        dataSyncService.deleteBatchUsersByArea(area, pins, deleteAll);
         return "OK";
     }
 
@@ -124,11 +131,21 @@ public class DataSyncController {
         return "OK";
     }
 
-    @RequestMapping(value="/restart", method = RequestMethod.POST)
-    public String restart(String SN) {
+    @RequestMapping(value="/operation", method = RequestMethod.POST)
+    public String restart(String SN, String operation) {
         Command command = new Command();
         command.setSN(SN);
-        command.setCmd("C:223:CONTROL DEVICE 03000000");
+        switch (operation) {
+            case "restart":
+                command.setCmd(("C:223:CONTROL DEVICE 03000000"));
+                break;
+                case "unlock":
+                    command.setCmd(("C:221:CONTROL DEVICE 1 1 1 9"));
+                    break;
+            default:
+                System.out.println("[info]: no operation was made");
+                break;
+        }
         accPushService.addCommand(command);
         return "OK";
     }
@@ -136,14 +153,8 @@ public class DataSyncController {
     @RequestMapping(value = "/restoreData", method = RequestMethod.POST)
     public String restoreData(String SN) {
         System.out.println("[Attpush]: starting restoring data for device" + SN);
-        Device currentDevice = accPushService.getDeviceInfoBySN(SN);
-//        this.clearData(SN);
-        //TODO get all employee info
-        List<Employee> employeeList = bizEmployeeMapper.getByArea(currentDevice.getArea());
-        //TODO generate commands
+        List<Employee> employeeList = bizEmployeeMapper.getByArea(deviceConfig.getAreaBySn(SN));
         dataSyncService.restoreRecords(employeeList, SN);
-        //TODO add commands to queue
-
         return "OK";
     }
 }

@@ -46,125 +46,193 @@ jobs:
   cron: 30 59 23 * * ?
   cron1: 0/5 * * * * ?
 
+#deviceConfig:
+#  deviceList:
+#    - SN: FAC1244501312
+#      area: 三厂熔解
+#      direction: 0
+#
+#
+#    - SN: CJDE231960060
+#      area: 三厂熔解
+#      direction: 1
+#
+#
+#    - SN: CJDE231960055
+#      area: 三厂熔解
+#      direction: 1
+#
+#
+#    - SN: CJDE231960059
+#      area: 三厂熔解
+#      direction: 0
+#
+#
+#    - SN: CJDE231860985
+#      area: 四厂熔解
+#      direction: 0
+#
+#
+#    - SN: FAC1243301202
+#      area: 四厂熔解
+#      direction: 1
+#
+#
+#    - SN: CKIK213460115
+#      area: 四厂熔解
+#      direction: 0
+#
+#
+#    - SN: CJDE231860951
+#      area: 四厂熔解
+#      direction: 1
+#
+#
+#    - SN: CJDE231960052
+#      area: 一厂熔解
+#      direction: 0
+#
+#
+#    - SN: CJDE231860972
+#      area: 一厂熔解
+#      direction: 1
+#
+#    - SN: CJDE231860968
+#      area: 一厂熔解
+#      direction: 1
+#
+#
+#    - SN: CJDE231960061
+#      area: 一厂熔解
+#      direction: 0
+#
+#
+#    - SN: CJDE231860955
+#      area: 三厂造型
+#      direction: 0
+#
+#
+#    - SN: CJDE225260588
+#      area: 三厂造型
+#      direction: 1
+#
+#
+#    - SN: CJDE231860974
+#      area: 三厂造型
+#      direction: 0
+#
+#
+#    - SN: CJDE225260707
+#      area: 三厂造型
+#      direction: 1
+#
+#
+#    - SN: CJDE231861051
+#      area: 四厂造型
+#      direction: 0
+#
+#
+#    - SN: CJDE225260697
+#      area: 四厂造型
+#      direction: 1
+#
+#
+#    - SN: CJDE231960057
+#      area: 四厂造型
+#      direction: 0
+#
+#
+#    - SN: CJDE225260584
+#      area: 四厂造型
+#      direction: 1
+#
+#
+#    - SN: CJDE225260587
+#      area: 一厂造型
+#      direction: 1
+#
+#
+#    - SN: CJDE231860516
+#      area: 一厂造型
+#      direction: 0
+#
+#
+#    - SN: CJDE225260708
+#      area: 一厂造型
+#      direction: 1
+#
+#
+#    - SN: CJDE231960053
+#      area: 一厂造型
+#      direction: 0
+#
+#  adminList:
+#    - '10001'
+#    - '09030333'
+#    - '01030043'
+#    - '03090123'
+
 deviceConfig:
-  deviceList:
-    - SN: FAC1244501312
-      area: 三厂熔解
-      direction: 0
+  areaDevices:
+    三厂熔解:
+      - SN: FAC1244501312
+        direction: 0
+      - SN: CJDE231960060
+        direction: 1
+      - SN: CJDE231960055
+        direction: 1
+      - SN: CJDE231960059
+        direction: 0
 
+    四厂熔解:
+      - SN: CJDE231860985
+        direction: 0
+      - SN: FAC1243301202
+        direction: 1
+      - SN: CKIK213460115
+        direction: 0
+      - SN: CJDE231860951
+        direction: 1
 
-    - SN: CJDE231960060
-      area: 三厂熔解
-      direction: 1
+    一厂熔解:
+      - SN: CJDE231960052
+        direction: 0
+      - SN: CJDE231860972
+        direction: 1
+      - SN: CJDE231860968
+        direction: 1
+      - SN: CJDE231960061
+        direction: 0
 
+    三厂造型:
+      - SN: CJDE231860955
+        direction: 0
+      - SN: CJDE225260588
+        direction: 1
+      - SN: CJDE231860974
+        direction: 0
+      - SN: CJDE225260707
+        direction: 1
 
-    - SN: CJDE231960055
-      area: 三厂熔解
-      direction: 1
+    四厂造型:
+      - SN: CJDE231861051
+        direction: 0
+      - SN: CJDE225260697
+        direction: 1
+      - SN: CJDE231960057
+        direction: 0
+      - SN: CJDE225260584
+        direction: 1
 
-
-    - SN: CJDE231960059
-      area: 三厂熔解
-      direction: 0
-
-
-    - SN: CJDE231860985
-      area: 四厂熔解
-      direction: 0
-
-
-    - SN: FAC1243301202
-      area: 四厂熔解
-      direction: 1
-
-
-    - SN: CKIK213460115
-      area: 四厂熔解
-      direction: 0
-
-
-    - SN: CJDE231860951
-      area: 四厂熔解
-      direction: 1
-
-
-    - SN: CJDE231960052
-      area: 一厂熔解
-      direction: 0
-
-
-    - SN: CJDE231860972
-      area: 一厂熔解
-      direction: 1
-
-    - SN: CJDE231860968
-      area: 一厂熔解
-      direction: 1
-
-
-    - SN: CJDE231960061
-      area: 一厂熔解
-      direction: 0
-
-
-    - SN: CJDE231860955
-      area: 三厂造型
-      direction: 0
-
-
-    - SN: CJDE225260588
-      area: 三厂造型
-      direction: 1
-
-
-    - SN: CJDE231860974
-      area: 三厂造型
-      direction: 0
-
-
-    - SN: CJDE225260707
-      area: 三厂造型
-      direction: 1
-
-
-    - SN: CJDE231861051
-      area: 四厂造型
-      direction: 0
-
-
-    - SN: CJDE225260697
-      area: 四厂造型
-      direction: 1
-
-
-    - SN: CJDE231960057
-      area: 四厂造型
-      direction: 0
-
-
-    - SN: CJDE225260584
-      area: 四厂造型
-      direction: 1
-
-
-    - SN: CJDE225260587
-      area: 一厂造型
-      direction: 1
-
-
-    - SN: CJDE231860516
-      area: 一厂造型
-      direction: 0
-
-
-    - SN: CJDE225260708
-      area: 一厂造型
-      direction: 1
-
-
-    - SN: CJDE231960053
-      area: 一厂造型
-      direction: 0
+    一厂造型:
+      - SN: CJDE225260587
+        direction: 1
+      - SN: CJDE231860516
+        direction: 0
+      - SN: CJDE225260708
+        direction: 1
+      - SN: CJDE231960053
+        direction: 0
 
   adminList:
     - '10001'

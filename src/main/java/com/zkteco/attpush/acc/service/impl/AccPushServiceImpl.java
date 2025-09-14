@@ -49,7 +49,7 @@ public class AccPushServiceImpl implements AccPushService {
 //                HttpClientUtil.post(uploadUrl + "/employee", JSON.toJSONString(employee));
                 // setting up for employee info sent to device
                 String SN = employee.getDevice();
-                List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
+                List<Device> devicesInSameArea = deviceConfig.getDevicesBySn(SN);
                 devicesInSameArea.forEach(device -> {
                     Command tempCommand = new Command();
                     tempCommand.setSN(device.getSN());
@@ -80,7 +80,7 @@ public class AccPushServiceImpl implements AccPushService {
         String SN = rawRecord.get("SN");
         String employeeName = "";
         String employeeNumber = "";
-        List<Device> devicesInSameArea = getDeviceInfoFromSameRegionBySN(SN);
+        List<Device> devicesInSameArea = deviceConfig.getDevicesBySn(SN);
         String newUserCmd = "";
         String userAuthCmd = "";
         if ("0".equals(cardNo)) {
@@ -127,21 +127,6 @@ public class AccPushServiceImpl implements AccPushService {
             cachedCommands.add(userAuthCommand);
         });
         System.out.println(cachedCommands);
-
-//        System.out.println("Cached cmd list");
-//        cachedCommands.forEach(cmd -> {
-//            System.out.println(cmd.getSN());
-//            System.out.println(cmd.getCmd());
-//        });
-    }
-
-    public List<Device> getDeviceInfoFromSameRegionBySN(String SN) {
-        String region = deviceConfig.getDeviceList().stream().filter(device -> device.getSN().equals(SN)).collect(Collectors.toList()).get(0).getArea();
-        return deviceConfig.getDeviceList().stream().filter(device -> device.getArea().equals(region)).collect(Collectors.toList());
-    }
-
-    public Device getDeviceInfoBySN(String SN) {
-        return deviceConfig.getDeviceList().stream().filter(device -> device.getSN().equals(SN)).collect(Collectors.toList()).get(0);
     }
 
 
@@ -155,10 +140,9 @@ public class AccPushServiceImpl implements AccPushService {
         EmployeeSignInOffEntity tempEmployee = new EmployeeSignInOffEntity();
         tempEmployee.setTime(rawRecord.get("time"));
         tempEmployee.setEmployeeNumber(rawRecord.get("pin"));
-        Device device = getDeviceInfoBySN(rawRecord.get("SN"));
-        System.out.println("[info]this device is " + device);
-        tempEmployee.setInoutStatus(device.getDirection());
-        tempEmployee.setArea(device.getArea());
+        System.out.println("[info]this device is " + rawRecord.get("SN"));
+        tempEmployee.setInoutStatus(deviceConfig.getDirectionBySn(rawRecord.get("SN")));
+        tempEmployee.setArea(deviceConfig.getAreaBySn(rawRecord.get("area")));
         System.out.println("[info]this person is signing " + ("0".equals(tempEmployee.getInoutStatus()) ? "in" : "off"));
         System.out.println(tempEmployee);
         if ("0".equals(tempEmployee.getInoutStatus())) {
@@ -205,7 +189,7 @@ public class AccPushServiceImpl implements AccPushService {
         }
         if (commandString.length() > 0) {
             cachedCommands.removeIf(cmd -> !cmd.getAvailability());
-            System.out.println(SN + " has cached commands: " + commandString.toString());
+            System.out.println(SN + " has cached commands: " + commandString);
             return commandString.toString();
         }
 
@@ -231,10 +215,6 @@ public class AccPushServiceImpl implements AccPushService {
         cachedCommands.add(command);
         System.out.println("[attpush]: command added \n" + command);
         return true;
-    }
-
-    public void test() {
-        System.out.println(getDeviceInfoFromSameRegionBySN("CJDE231960055"));
     }
 
 }

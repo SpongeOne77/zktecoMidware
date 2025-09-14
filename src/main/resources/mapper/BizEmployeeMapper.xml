@@ -18,4 +18,19 @@
         <include refid="selectBizEmployeeList" />
         WHERE area = #{area};
     </select>
+
+    <delete id="deleteByPin" parameterType="java.lang.String">
+        DELETE FROM tbl_biz_contrl_employee
+        WHERE pin = #{pin}
+        AND area = #{area}
+    </delete>
+
+    <delete id="batchDeleteByPins">
+        DELETE FROM tbl_biz_contrl_employee
+        WHERE employee_number IN
+        <foreach collection="pins" item="pin" open="(" separator="," close=")">
+            #{pin}
+        </foreach>
+        AND area = #{area}
+    </delete>
 </mapper>

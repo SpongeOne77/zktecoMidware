@@ -216,15 +216,14 @@ public class AccPushProccesor {
         String verification = "";
         String cmd = "";
         if (!access) {
-            verification = "AUTH=FAIL\r\n";
-            System.out.println("Warning: Shall not pass");
+            verification = "AUTH=FAILED";
         } else {
-            System.out.println("Warning: Access granted");
-            verification = "AUTH=SUCCESS\n";
-            cmd = "C:221:CONTROL DEVICE 1 1 1 9\r\n\r\n";
+            verification = "AUTH=SUCCESS";
+            cmd = "CONTROL DEVICE 1 1 1 9";
         }
-        System.out.println(verification + originalRequestString + "\r\n" + cmd);
-        return verification + originalRequestString + "\r\n" + cmd;
+        String cmdString = verification + "\r\n" + originalRequestString + "\r\n" + cmd;
+        System.out.println(cmdString);
+        return cmdString;
     }
 
     /**

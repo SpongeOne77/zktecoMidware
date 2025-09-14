@@ -35,12 +35,6 @@ public interface AccPushService {
      */
     public List<Command> getCommandListBySN(String SN);
 
-    /**
-     *
-     * @param SN
-     * @return
-     */
-    public Device getDeviceInfoBySN(String SN);
 
     /**
      * turn list of commands into a string
@@ -57,7 +51,4 @@ public interface AccPushService {
     public boolean addCommand(Command command);
 
     public String heartbeatCheck(String SN);
-
-    public void test();
-
 }
